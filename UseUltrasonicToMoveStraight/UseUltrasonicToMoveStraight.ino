@@ -154,20 +154,20 @@ if (distanceR > distanceL) {
 
 Serial.println("distanceR");
   digitalWrite(MotorPinL, CCW);// set direction
-  analogWrite(MotorSpeedPinL, 40);// set speed at maximum
+  analogWrite(MotorSpeedPinL, 100);// set speed at maximum
 
  digitalWrite(MotorPinR, CCW);// set direction
-  analogWrite(MotorSpeedPinR, 100);// set speed at maximum
+  analogWrite(MotorSpeedPinR, 240);// set speed at maximum
   
 }
 else {
   Serial.println("distanceL");
 
   digitalWrite(MotorPinL, CCW);// set direction
-  analogWrite(MotorSpeedPinL, 100);// set speed at maximum
+  analogWrite(MotorSpeedPinL, 240);// set speed at maximum
 
  digitalWrite(MotorPinR, CCW);// set direction
-  analogWrite(MotorSpeedPinR, 40);// set speed at maximum
+  analogWrite(MotorSpeedPinR, 100);// set speed at maximum
 }
 
   
