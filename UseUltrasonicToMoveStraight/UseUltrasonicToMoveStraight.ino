@@ -1,13 +1,13 @@
 //Use ultrasonics to move correct motors to move at the same speed
 
 /********************----Motor pin decleration ---*******************************************************************************/
-const int MotorPinA = 4; // for motor A
-const int MotorSpeedPinA = 5; // for motor A
+const int MotorPinR = 7; // for motor A
+const int MotorSpeedPinR = 6; // for motor A
 //const int MotorBrakePinA = 9; // for motor A
 
 
-const int MotorPinB = 7; // for motor B
-const int MotorSpeedPinB = 6;// for motor B
+const int MotorPinL = 4; // for motor B
+const int MotorSpeedPinL = 5;// for motor B
 //const int MotorBrakePinB = 8;// for motor B
 
 const int CW  = HIGH;
@@ -19,22 +19,22 @@ const int CCW = LOW;
 
 /********************----Ultrasonic L pin decleration ---*******************************************************************************/
 // defines pins numbers
-const int trigpinL = 9;
-const int echopinL = 10;
+const int trigpinR = 9;
+const int echopinR = 10;
 // defines variables
-long durationL;
-int distanceL;
+long durationR;
+int distanceR;
 /******************************************************************************************************************************/
 
 
 
 /********************----Ultrasonic R pin decleration ---*******************************************************************************/
 // defines pins numbers
-const int trigpinR = 11;
-const int echopinR = 12;
+const int trigpinL = 11;
+const int echopinL = 12;
 // defines variables
-long durationR;
-int distanceR;
+long durationL;
+int distanceL;
 /******************************************************************************************************************************/
 
 
@@ -70,13 +70,13 @@ pinMode(echopinR, INPUT); // Sets the echopinR as an Input
    
 /********************----Motor Setup ---*******************************************************************************/
   // motor A pin assignment
-  pinMode(MotorPinA, OUTPUT);
-  pinMode(MotorSpeedPinA, OUTPUT);
+  pinMode(MotorPinR, OUTPUT);
+  pinMode(MotorSpeedPinR, OUTPUT);
   //pinMode(MotorBrakePinA, OUTPUT);
 
   // motor B pin assignment
-  pinMode(MotorPinB, OUTPUT);
-  pinMode(MotorSpeedPinB, OUTPUT);
+  pinMode(MotorPinL, OUTPUT);
+  pinMode(MotorSpeedPinL, OUTPUT);
   //pinMode(MotorBrakePinB, OUTPUT); 
 /**********************************************************************************************************************/
 
@@ -114,8 +114,8 @@ durationL = pulseIn(echopinL, HIGH);
 // Calculating the distanceL
 distanceL= durationL*0.034/2;
 // Prints the distanceL on the Serial Monitor
-Serial.print("distanceL: ");
-Serial.println(distanceL);
+//Serial.print("distanceL: ");
+//Serial.println(distanceL);
 /*********************************************************************************************************************************/
 
 
@@ -133,8 +133,8 @@ durationR = pulseIn(echopinR, HIGH);
 // Calculating the distanceR
 distanceR= durationR*0.034/2;
 // Prints the distanceR on the Serial Monitor
-Serial.print("distanceR: ");
-Serial.println(distanceR);
+//Serial.print("distanceR: ");
+//Serial.println(distanceR);
 /*********************************************************************************************************************************/
 
 
@@ -142,11 +142,35 @@ Serial.println(distanceR);
 
 
 /********************----Run Motor Loop Code ---**********************************************************************************/
+/*
  digitalWrite(MotorPinB, CW);// set direction
   analogWrite(MotorSpeedPinB, 100);// set speed at maximum
 
  digitalWrite(MotorPinA, CW);// set direction
   analogWrite(MotorSpeedPinA, 100);// set speed at maximum
+  */
+
+if (distanceR > distanceL) {
+
+Serial.println("distanceR");
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, 40);// set speed at maximum
+
+ digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, 100);// set speed at maximum
+  
+}
+else {
+  Serial.println("distanceL");
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, 100);// set speed at maximum
+
+ digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, 40);// set speed at maximum
+}
+
+  
 /**********************************************************************************************************************************/
 
 
