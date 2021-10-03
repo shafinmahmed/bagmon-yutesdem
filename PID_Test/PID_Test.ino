@@ -55,7 +55,7 @@ double error = 0.0;
 double iError = 0.0;
 double dError = 0.0;
 
-double kp = 15;   double ki = 0;   double kd = 0; //Adjust as needed
+double kp = 15;   double ki = 0;   double kd = 5; //Adjust as needed
 
 int PID_p = 0;    int PID_i = 0;    int PID_d = 0;
 float last_kp = 0;
@@ -196,9 +196,10 @@ void loop() {
     maxError = abs(totalError);
   }*/
 
-  double PWM_adjustment = map(abs(totalError), 0, 120, 0, 255);
 
-  if (abs(totalError) > 120) {
+  double PWM_adjustment = map(abs(totalError), 0, 100, 0, 255);
+
+  if (abs(totalError) > 100) {
     PWM_adjustment = 255;
   }
 
