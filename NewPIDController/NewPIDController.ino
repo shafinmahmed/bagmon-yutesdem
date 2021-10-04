@@ -115,6 +115,21 @@ void setup() {
 void loop() {
   /********************----Run Ultrasonic L Loop Code ---*******************************************************************************/
 
+  // Clears the trigpinL
+  digitalWrite(trigpinL, LOW);
+  delayMicroseconds(2);
+  // Sets the trigpinL on HIGH state for 10 micro seconds
+  digitalWrite(trigpinL, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigpinL, LOW);
+  // Reads the echopinL, returns the sound wave travel time in microseconds
+  durationL = pulseIn(echopinL, HIGH);
+  // Calculating the distanceL
+  distanceL= durationL*0.034/2;
+  // Prints the distanceL on the Serial Monitor
+  //Serial.print("distanceL: ");
+  //Serial.println(distanceL);
+  /*********************************************************************************************************************************/
   /********************----Run Ultrasonic L Loop Code ---*******************************************************************************/
 
   // Clears the trigpinL

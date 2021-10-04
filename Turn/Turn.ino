@@ -191,7 +191,7 @@ void loop() {
 
  /********************----Turn function ---*******************************************************************************/
 
-if(distanceF < 30 && distanceL > 30)
+if(distanceF < 40 && distanceL > 30)
 {
   TurnLeft();
 }
@@ -273,31 +273,41 @@ void TurnLeft()
 {
 
  Serial.print("     Stop");
-
+//stop
  analogWrite(MotorSpeedPinL, 0);// set speed at maximum
  analogWrite(MotorSpeedPinR, 0);// set speed at maximum
  delay(1000);
 
-
+//go straight
 digitalWrite(MotorPinL, CCW);// set direction
-analogWrite(MotorSpeedPinL, 100);// set speed at maximum
+analogWrite(MotorSpeedPinL, 130);// set speed at maximum
   
-digitalWrite(MotorPinR, CCW);// set direction
+digitalWrite(MotorPinR, CCW);// set direction  
 analogWrite(MotorSpeedPinR, 100);// set speed at maximum
-delay(500);
+delay(700);
 
+//stop
+ analogWrite(MotorSpeedPinL, 0);// set speed at maximum
+ analogWrite(MotorSpeedPinR, 0);// set speed at maximum
+ delay(1000);
 
+ 
+//turn
 digitalWrite(MotorPinL, CW);// set direction
-analogWrite(MotorSpeedPinL, 100);// set speed at maximum
+analogWrite(MotorSpeedPinL, 150);// set speed at maximum
   
 digitalWrite(MotorPinR, CCW);// set direction
-analogWrite(MotorSpeedPinR, 100);// set speed at maximum
-delay(4500);
+analogWrite(MotorSpeedPinR, 120);// set speed at maximum
+delay(2500);
 
 
+//reset all motors to run forward
 analogWrite(MotorSpeedPinL, 0);// set speed at maximum
  analogWrite(MotorSpeedPinR, 0);// set speed at maximum
- delay(3000);
+ delay(1000);
+
+
+
 
  digitalWrite(MotorPinR, CCW);// set direction
  digitalWrite(MotorPinL, CCW);// set direction
