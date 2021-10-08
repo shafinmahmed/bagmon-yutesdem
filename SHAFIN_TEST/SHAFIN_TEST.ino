@@ -184,24 +184,93 @@ void setup() {
 
 void loop() {
 
-  Serial.println("First line");
 
-
-  while (getDistanceRight() < 20.0 && getDistanceLeft() < 20.00) {
+  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) {  //#1 stretch of straight
+    Serial.println("GOING STRAIGHT");
     goStraight(millis());
   }
   allMotorStop();
-
   delay(1000);
 
-  turnLeft90();
-  //turnRight90();
+
+
+
+  turnLeft90(); //#2 left turn
+  allMotorStop();
+  delay(1000);
+  Serial.println("ALL STOP");
+
+
+
+
+
+  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#3 stretch of straight
+    goStraight(millis());
+    Serial.println("GOING STRAIGHT AGAIN");
+  }
+  allMotorStop();
+  delay(1000);
+
+
+
+
+  turnLeft90(); //#4 left turn;
+  allMotorStop();
+  delay(1000);
+  Serial.println("ALL STOP");
+
+
+
+  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#5 stretch of straight
+    goStraight(millis());
+    Serial.println("GOING STRAIGHT AGAIN BRO");
+  }
+  allMotorStop();
+  Reset_Gyro();
+
+
+  turnRight90(); //#6 turn right
+  allMotorStop();
+  delay(1000);
+  Serial.println("ALL STOP");
+
+  while (getDistanceFront() > 5.00) { // #7 blind straight action for the T
+    digitalWrite(MotorPinL, CCW);// set direction
+    analogWrite(MotorSpeedPinL, 95);// set speed
+
+    digitalWrite(MotorPinR, CCW);// set direction
+    analogWrite(MotorSpeedPinR, 145);// set speed
+  }
+  allMotorStop();
+  delay(1000);
+
+
+  Reset_Gyro();
+  turnRight90(); //#8 turn right
+  allMotorStop();
+  delay(1000);
+
+
+
+  
+  while (getDistanceFront() > 5.00) { //#9 stretch of straight
+    goStraight(millis());
+  }
+  allMotorStop();
+  delay(1000);
+
+
+  while (1) {
+    Serial.println("PROGRAM EXECUTED BAGMONS");
+  }
+
+  //Serial.println(getYawDeg());
 
 }
 
 void goStraight(long startTime) {
 
-  if ((getDistanceRight() > 20.0) || (getDistanceLeft() > 20.0)) {
+  if ((getDistanceRight() > 20.0) || (getDistanceLeft() > 20.0)) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
@@ -323,14 +392,15 @@ void turnLeft90() {
 
   /////////////////////////// PULL BACK SLIGHTLY /////////////////////////////
   digitalWrite(MotorPinL, CW);// set direction
-  analogWrite(MotorSpeedPinL, 95);// set speed
+  analogWrite(MotorSpeedPinL, 50);// set speed
   digitalWrite(MotorPinR, CW);// set direction
   analogWrite(MotorSpeedPinR, 145);// set speed
-  delay(250);
+  delay(750);
 
   while (1) {
     double theVal = getYawDeg();
-    if (abs(theVal) > abs(yawTarget)) {
+    Serial.print("CURRENT: "); Serial.print(theVal); Serial.print("    TARGET: "); Serial.println(yawTarget);
+    if (theVal < yawTarget) {
       allMotorStop();
       delay(500);
 
@@ -340,15 +410,18 @@ void turnLeft90() {
       digitalWrite(MotorPinR, CCW);// set direction
       analogWrite(MotorSpeedPinR, 145);// set speed
 
-      delay(1500);
+      Serial.println("TURN COMPLETE");
+
+      delay(1250);
 
       allMotorStop();
 
       return;
     }
     else {
-      digitalWrite(MotorPinL, CCW);// set direction
-      analogWrite(MotorSpeedPinL, 50);// set speed
+      Serial.println("GOTTA TURN");
+      digitalWrite(MotorPinL, CW);// set direction
+      analogWrite(MotorSpeedPinL, 10);// set speed
       digitalWrite(MotorPinR, CCW);// set direction
       analogWrite(MotorSpeedPinR, 145);// set speed
     }
@@ -356,19 +429,32 @@ void turnLeft90() {
 }
 
 void turnRight90() {
-  double yawInit = getYawDeg();
-  double yawTarget = yawInit + 85;
+
+  /////////////////////////// PULL FORWARD SLIGHTLY //////////////////////////
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, 95);// set speed
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, 190);// set speed
+
+  delay(400);
+
 
   /////////////////////////// PULL BACK SLIGHTLY /////////////////////////////
   digitalWrite(MotorPinL, CW);// set direction
-  analogWrite(MotorSpeedPinL, 95);// set speed
+  analogWrite(MotorSpeedPinL, 180);// set speed
   digitalWrite(MotorPinR, CW);// set direction
-  analogWrite(MotorSpeedPinR, 145);// set speed
-  delay(250);
+  analogWrite(MotorSpeedPinR, 25);// set speed
+  delay(900);
+  Serial.print(getYawDeg());
+  double yawInit = getYawDeg();
+  double yawTarget = yawInit + 85;
 
   while (1) {
     double theVal = getYawDeg();
-    if (abs(theVal) > abs(yawTarget)) {
+    Serial.print("CURRENT: "); Serial.print(theVal); Serial.print("    TARGET: "); Serial.println(yawTarget);
+    if (theVal > yawTarget) {
       allMotorStop();
       delay(500);
 
@@ -378,6 +464,8 @@ void turnRight90() {
       digitalWrite(MotorPinR, CCW);// set direction
       analogWrite(MotorSpeedPinR, 145);// set speed
 
+      Serial.println("TURN COMPLETE");
+
       delay(1500);
 
       allMotorStop();
@@ -385,10 +473,38 @@ void turnRight90() {
       return;
     }
     else {
+      Serial.println("GOTTA TURN");
       digitalWrite(MotorPinL, CCW);// set direction
       analogWrite(MotorSpeedPinL, 145);// set speed
       digitalWrite(MotorPinR, CW);// set direction
       analogWrite(MotorSpeedPinR, 95);// set speed
     }
+  }
+}
+
+void Reset_Gyro() {
+  mpu.initialize();
+
+  devStatus = mpu.dmpInitialize();
+
+  mpu.setXGyroOffset(220);
+  mpu.setYGyroOffset(76);
+  mpu.setZGyroOffset(-85);
+  mpu.setZAccelOffset(1788);
+
+  if (devStatus == 0) {
+    mpu.CalibrateAccel(6);
+    mpu.CalibrateGyro(6);
+    mpu.PrintActiveOffsets();
+    mpu.setDMPEnabled(true);
+
+    mpuIntStatus = mpu.getIntStatus();
+    dmpReady = true;
+    packetSize = mpu.dmpGetFIFOPacketSize();
+  }
+  else {
+    Serial.print(F("DMP Initialization failed (code "));
+    Serial.print(devStatus);
+    Serial.println(F(")"));
   }
 }
