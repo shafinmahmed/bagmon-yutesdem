@@ -189,7 +189,7 @@ void loop() {
 
 
 
- /********************----Turn function ---*******************************************************************************/
+ /********************----Turn Left function ---*******************************************************************************/
 
 if(distanceF < 40 && distanceL > 30)
 {
@@ -197,6 +197,17 @@ if(distanceF < 40 && distanceL > 30)
 }
 
  /*********************************************************************************************************************************/
+
+
+
+ /********************----Turn Right function ---*******************************************************************************/
+
+if(distanceF < 30 && distanceR > 30)
+{
+  TurnRight();
+}
+
+/*********************************************************************************************************************************/
 
 
 
@@ -269,6 +280,9 @@ if(distanceF < 40 && distanceL > 30)
 
 
 
+
+/********************----Turn left function ---*******************************************************************************/
+
 void TurnLeft()
 {
 
@@ -298,7 +312,16 @@ analogWrite(MotorSpeedPinL, 150);// set speed at maximum
   
 digitalWrite(MotorPinR, CCW);// set direction
 analogWrite(MotorSpeedPinR, 120);// set speed at maximum
-delay(2500);
+delay(2700);
+
+//go straight
+digitalWrite(MotorPinL, CCW);// set direction
+analogWrite(MotorSpeedPinL, 130);// set speed at maximum
+  
+digitalWrite(MotorPinR, CCW);// set direction  
+analogWrite(MotorSpeedPinR, 100);// set speed at maximum
+delay(500);
+
 
 
 //reset all motors to run forward
@@ -318,3 +341,72 @@ analogWrite(MotorSpeedPinL, 0);// set speed at maximum
 return;
 
 } 
+ /*********************************************************************************************************************************/
+
+
+
+
+
+
+/********************----Turn Right function ---*******************************************************************************/
+void TurnRight()
+{
+
+ Serial.print("     Stop");
+//stop
+ analogWrite(MotorSpeedPinL, 0);// set speed at maximum
+ analogWrite(MotorSpeedPinR, 0);// set speed at maximum
+ delay(1000);
+
+//go straight
+digitalWrite(MotorPinL, CCW);// set direction
+analogWrite(MotorSpeedPinL, 130);// set speed at maximum
+  
+digitalWrite(MotorPinR, CCW);// set direction  
+analogWrite(MotorSpeedPinR, 100);// set speed at maximum
+delay(800);
+
+
+//stop
+ analogWrite(MotorSpeedPinL, 0);// set speed at maximum
+ analogWrite(MotorSpeedPinR, 0);// set speed at maximum
+ delay(1000);
+
+ 
+//turn
+digitalWrite(MotorPinL, CCW);// set direction
+analogWrite(MotorSpeedPinL, 150);// set speed at maximum
+  
+digitalWrite(MotorPinR, CW);// set direction
+analogWrite(MotorSpeedPinR, 130);// set speed at maximum
+delay(1000);
+
+
+//go straight
+digitalWrite(MotorPinL, CCW);// set direction
+analogWrite(MotorSpeedPinL, 130);// set speed at maximum
+  
+digitalWrite(MotorPinR, CCW);// set direction  
+analogWrite(MotorSpeedPinR, 100);// set speed at maximum
+delay(700);
+
+
+
+//reset all motors to run forward
+analogWrite(MotorSpeedPinL, 0);// set speed at maximum
+ analogWrite(MotorSpeedPinR, 0);// set speed at maximum
+ delay(1000);
+
+
+
+
+ digitalWrite(MotorPinR, CCW);// set direction
+ digitalWrite(MotorPinL, CCW);// set direction
+ 
+
+
+ 
+return;
+
+} 
+ /*********************************************************************************************************************************/
