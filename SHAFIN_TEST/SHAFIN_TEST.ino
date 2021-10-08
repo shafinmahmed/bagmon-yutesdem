@@ -234,7 +234,118 @@ void loop() {
   delay(1000);
   Serial.println("ALL STOP");
 
-  while (getDistanceFront() > 5.00) { // #7 blind straight action for the T
+  while (getDistanceFront() > 8.00) { // #7 blind straight action for the T
+    digitalWrite(MotorPinL, CCW);// set direction
+    analogWrite(MotorSpeedPinL, 95);// set speed
+
+    digitalWrite(MotorPinR, CCW);// set direction
+    analogWrite(MotorSpeedPinR, 145);// set speed
+  }
+  allMotorStop();
+
+
+
+  Reset_Gyro();
+  turnRight90(); //#8 turn right
+  allMotorStop();
+  delay(1000);
+
+
+
+
+  while (getDistanceLeft() < 30.0 && getDistanceRight() < 30.0) { //#9 stretch of straight
+    goStraight_RampDown(millis());
+  }
+  allMotorStop();
+  Reset_Gyro();
+
+
+
+  turnRight90(); //#10 turn right
+  allMotorStop();
+  delay(1000);
+
+  while (getDistanceLeft() < 30.0 && getDistanceRight() < 30.00) { //#11 stretch of straight
+    goStraight_RampDown(millis());
+  }
+  allMotorStop();
+  Reset_Gyro();
+
+
+  turnRight90(); //#12 turn right
+  allMotorStop();
+  delay(1000);
+
+
+
+  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#13 stretch of straight
+    goStraight(millis());
+    Serial.println("GOING STRAIGHT AGAIN BRO");
+  }
+  allMotorStop();
+  Reset_Gyro();
+
+
+
+  turnRight90(); //#14 turn right
+  allMotorStop();
+  delay(1000);
+
+
+
+  while (getDistanceFront() > 5.00) { // #15 blind straight action for the T
+    digitalWrite(MotorPinL, CCW);// set direction
+    analogWrite(MotorSpeedPinL, 95);// set speed
+
+    digitalWrite(MotorPinR, CCW);// set direction
+    analogWrite(MotorSpeedPinR, 145);// set speed
+  }
+  allMotorStop();
+  Reset_Gyro();
+
+
+  turnRight90(); //#16 turn right
+  allMotorStop();
+  delay(1000);
+
+
+  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#17 stretch of straight
+    goStraight(millis());
+    Serial.println("GOING STRAIGHT AGAIN BRO");
+  }
+  allMotorStop();
+  delay(1000);
+
+
+
+
+  turnLeft90(); //#18 left turn;
+  allMotorStop();
+  delay(1000);
+  Serial.println("ALL STOP");
+
+
+
+
+  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#19 stretch of straight
+    goStraight(millis());
+    Serial.println("GOING STRAIGHT AGAIN BRO");
+  }
+  allMotorStop();
+  delay(1000);
+
+
+
+
+  turnLeft90(); //#20 left turn;
+  allMotorStop();
+  delay(1000);
+  Serial.println("ALL STOP");
+
+
+
+
+  while (getDistanceFront() > 5.00) { // #21 blind straight action for driving up to the miner
     digitalWrite(MotorPinL, CCW);// set direction
     analogWrite(MotorSpeedPinL, 95);// set speed
 
@@ -245,19 +356,9 @@ void loop() {
   delay(1000);
 
 
-  Reset_Gyro();
-  turnRight90(); //#8 turn right
-  allMotorStop();
-  delay(1000);
 
 
-
-  
-  while (getDistanceFront() > 5.00) { //#9 stretch of straight
-    goStraight(millis());
-  }
-  allMotorStop();
-  delay(1000);
+  // MINER GRAB MECHANISM
 
 
   while (1) {
@@ -319,6 +420,60 @@ void goStraight(long startTime) {
   lastPWM_L = PWML;
   Serial.print("         MOTOR R: "); Serial.print(PWMR); Serial.print("               MOTOR L: "); Serial.println(PWML);
 
+}
+
+void goStraight_RampDown(long startTime) {
+  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+    return;
+  }
+
+  delay(10);
+
+  error = getDistanceRight() - getDistanceLeft();
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+
+  double totalError = (kp * error) + (ki * iError) + (kd * dError);
+
+  PWMR = 100 - totalError;
+  PWML = 1.45 * (100 + totalError) ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  //Serial.print("TOTAL ERROR: ");
+  //Serial.print(totalError);
+
+  double PWML_Adjusted = PWML * 0.50;
+  double PWMR_Adjusted = PWMR * 0.50;
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR_Adjusted);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+  Serial.print("         MOTOR R: "); Serial.print(PWMR); Serial.print("               MOTOR L: "); Serial.println(PWML);
 }
 
 double getDistanceLeft() {
