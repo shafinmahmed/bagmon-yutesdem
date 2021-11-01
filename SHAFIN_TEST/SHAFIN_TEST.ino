@@ -79,7 +79,7 @@ double error = 0.0;
 double iError = 0.0;
 double dError = 0.0;
 
-double kp = 10.5;   double ki = 0.0;   double kd = 2.5; //Adjust as needed
+double kp = 4.0;   double ki = 0.0;   double kd = 2.5; //Adjust as needed
 
 int PWMR = 255;
 int PWML = 255;
@@ -185,7 +185,7 @@ void setup() {
 void loop() {
 
 
-  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) {  //#1 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) {  //#1 stretch of straight
     Serial.println("GOING STRAIGHT");
     goStraight(millis());
   }
@@ -204,13 +204,12 @@ void loop() {
 
 
 
-  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#3 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) { //#3 stretch of straight
     goStraight(millis());
     Serial.println("GOING STRAIGHT AGAIN");
   }
   allMotorStop();
   delay(1000);
-
 
 
 
@@ -221,7 +220,7 @@ void loop() {
 
 
 
-  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#5 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) { //#5 stretch of straight
     goStraight(millis());
     Serial.println("GOING STRAIGHT AGAIN BRO");
   }
@@ -253,7 +252,7 @@ void loop() {
 
 
 
-  while (getDistanceLeft() < 30.0 && getDistanceRight() < 30.0) { //#9 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.0) { //#9 stretch of straight
     goStraight_RampDown(millis());
   }
   allMotorStop();
@@ -265,7 +264,7 @@ void loop() {
   allMotorStop();
   delay(1000);
 
-  while (getDistanceLeft() < 30.0 && getDistanceRight() < 30.00) { //#11 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) { //#11 stretch of straight
     goStraight_RampDown(millis());
   }
   allMotorStop();
@@ -278,7 +277,7 @@ void loop() {
 
 
 
-  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#13 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) { //#13 stretch of straight
     goStraight(millis());
     Serial.println("GOING STRAIGHT AGAIN BRO");
   }
@@ -293,7 +292,7 @@ void loop() {
 
 
 
-  while (getDistanceFront() > 5.00) { // #15 blind straight action for the T
+  while (getDistanceFront() > 8.00) { // #15 blind straight action for the T
     digitalWrite(MotorPinL, CCW);// set direction
     analogWrite(MotorSpeedPinL, 95);// set speed
 
@@ -309,16 +308,16 @@ void loop() {
   delay(1000);
 
 
-  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#17 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) { //#17 stretch of straight
     goStraight(millis());
     Serial.println("GOING STRAIGHT AGAIN BRO");
   }
   allMotorStop();
-  delay(1000);
+  //delay(1000);
 
 
 
-
+  Reset_Gyro();
   turnLeft90(); //#18 left turn;
   allMotorStop();
   delay(1000);
@@ -327,7 +326,7 @@ void loop() {
 
 
 
-  while (getDistanceLeft() < 20.0 && getDistanceRight() < 20.00) { //#19 stretch of straight
+  while (getDistanceLeft() < 26.0 && getDistanceRight() < 26.00) { //#19 stretch of straight
     goStraight(millis());
     Serial.println("GOING STRAIGHT AGAIN BRO");
   }
@@ -345,7 +344,7 @@ void loop() {
 
 
 
-  while (getDistanceFront() > 5.00) { // #21 blind straight action for driving up to the miner
+  while (getDistanceFront() > 8.00) { // #21 blind straight action for driving up to the miner
     digitalWrite(MotorPinL, CCW);// set direction
     analogWrite(MotorSpeedPinL, 95);// set speed
 
@@ -356,9 +355,21 @@ void loop() {
   delay(1000);
 
 
-
-
+  
   // MINER GRAB MECHANISM
+  long timeNow = millis();
+  long timeUntil = timeNow + 5000;
+
+  while (millis() < timeUntil) {
+    digitalWrite(MotorPinL, CCW);// set direction
+    analogWrite(MotorSpeedPinL, 150);// set speed
+
+    digitalWrite(MotorPinR, CCW);// set direction
+    analogWrite(MotorSpeedPinR, 200);// set speed
+  }
+
+
+  
 
 
   while (1) {
@@ -371,7 +382,7 @@ void loop() {
 
 void goStraight(long startTime) {
 
-  if ((getDistanceRight() > 20.0) || (getDistanceLeft() > 20.0)) { //this is a redundancy. maybe we can remove?
+  if ((getDistanceRight() > 26.0) || (getDistanceLeft() > 26.0)) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
@@ -423,7 +434,7 @@ void goStraight(long startTime) {
 }
 
 void goStraight_RampDown(long startTime) {
-  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+  if ((getDistanceRight() > 26.0) || (getDistanceLeft() > 26.0)) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
@@ -543,14 +554,14 @@ void allMotorStop() {
 
 void turnLeft90() {
   double yawInit = getYawDeg();
-  double yawTarget = yawInit - 85;
+  double yawTarget = yawInit - 83.5;
 
   /////////////////////////// PULL BACK SLIGHTLY /////////////////////////////
   digitalWrite(MotorPinL, CW);// set direction
-  analogWrite(MotorSpeedPinL, 50);// set speed
+  analogWrite(MotorSpeedPinL, 70);// set speed
   digitalWrite(MotorPinR, CW);// set direction
-  analogWrite(MotorSpeedPinR, 145);// set speed
-  delay(750);
+  analogWrite(MotorSpeedPinR, 150);// set speed
+  delay(850);
 
   while (1) {
     double theVal = getYawDeg();
@@ -604,7 +615,7 @@ void turnRight90() {
   delay(900);
   Serial.print(getYawDeg());
   double yawInit = getYawDeg();
-  double yawTarget = yawInit + 85;
+  double yawTarget = yawInit + 83.5;
 
   while (1) {
     double theVal = getYawDeg();
