@@ -1,7 +1,5 @@
  double distance;
 
-
-
 void setup() {
   Serial.begin(9600);
   pinMode(2, OUTPUT); //enable pin
