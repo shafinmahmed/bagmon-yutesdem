@@ -1,6 +1,6 @@
 //+++++++++++++++++++++++++++++++++++++ GYRO STUFF ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include "I2Cdev.h"
-
+#include "Servo.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
@@ -78,8 +78,8 @@ double prevError = 0.0;
 double error = 0.0;
 double iError = 0.0;
 double dError = 0.0;
-
-double kp = 2.75;   double ki = 0.0;   double kd = 2.8; //Adjust as needed
+// p = 6 d = 4
+double kp = 6.3;   double ki = 0.0;   double kd = 4.3; //Adjust as needed
 
 int PWMR = 255;
 int PWML = 255;
@@ -170,9 +170,34 @@ void setup() {
 }
 
 void loop() {
-Serial.print("L: "); Serial.print(getDistanceLeft()); Serial.print("    R: "); Serial.println(getDistanceRight());
-goStraight(millis);
+ /* while ((getDistanceRight() < 20.0) && (getDistanceLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
+     goStraight_RampUpLong(millis());
+    }
+*/
+/*
+  //Serial.print(getDistanceLeft()); Serial.print("     "); Serial.println(getDistanceRight());
+  while ((getDistanceRight() < 20.0) && (getDistanceLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
+    goStraight(millis());
+    }*/
+
+  /*
+      allMotorStop();
+      delay(1000);
+      Reset_Gyro();
+
+      turnRight90();
+
+      allMotorStop();
+      delay(1000);
+*/
+  while ((getDistanceRight() < 20.0) && (getDistanceLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
+    goStraight(millis());
+  }
+  
+
+
 }
+
 
 void goStraight(long startTime) {
 
@@ -196,8 +221,8 @@ void goStraight(long startTime) {
 
   double totalError = (kp * error) + (ki * iError) + (kd * dError);
 
-  PWMR = 100 - totalError;
-  PWML = 0.95*(100 + totalError) ;
+  PWMR = 0.55 * (100 - totalError);
+  PWML = (100 + totalError) ;
 
   if (PWMR < 0) {
     PWMR = 0;
@@ -214,7 +239,7 @@ void goStraight(long startTime) {
     PWML = 255;
   }
 
-
+  Serial.print ("PWML: "); Serial.print (PWML); Serial.print ("      PWMR: "); Serial.print (PWMR);
   digitalWrite(MotorPinL, CCW);// set direction
   analogWrite(MotorSpeedPinL, PWML);// set speed at maximum
 
@@ -226,8 +251,11 @@ void goStraight(long startTime) {
 
 }
 
-void goStraight_RampDown(long startTime) {
-  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+
+
+
+void goStraight_R(long startTime) {
+  if ((getDistanceRight() > 20.0) || (getDistanceLeft() > 20.0)) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
@@ -236,6 +264,8 @@ void goStraight_RampDown(long startTime) {
 
   error = getDistanceRight() - getDistanceLeft();
 
+  Serial.print("ERROR: "); Serial.println(error);
+
   long newTime = millis();
 
   long elapsedTime = newTime - startTime;
@@ -243,7 +273,9 @@ void goStraight_RampDown(long startTime) {
   iError += error * elapsedTime;
   dError = (error - prevError) / (elapsedTime);
 
-  double totalError = (kp * error) + (ki * iError) + (kd * dError);
+  double kp_rd = 7; double ki_rd = 0.0; double kd_rd = 4;
+
+  double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
 
   PWMR = 100 - totalError;
   PWML = 100 + totalError ;
@@ -263,8 +295,9 @@ void goStraight_RampDown(long startTime) {
     PWML = 255;
   }
 
-  double PWML_Adjusted = PWML * 0.50;
-  double PWMR_Adjusted = PWMR * 0.50;
+
+  double PWML_Adjusted = (PWML * 0.73);
+  double PWMR_Adjusted = (PWMR * 1.0);
 
   digitalWrite(MotorPinL, CCW);// set direction
   analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
@@ -276,6 +309,177 @@ void goStraight_RampDown(long startTime) {
   lastPWM_L = PWML;
 }
 
+/***********************************************-go straight ramp down Short*************************************************************************************************/
+
+void goStraight_RampDownShort(long startTime) {
+  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+    return;
+  }
+
+  delay(10);
+
+  error = getDistanceRight() - getDistanceLeft();
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+  //kp = 7 kd = 13 speed  = 0.4
+  double kp_rd = 1.5; double ki_rd = 0.0; double kd_rd = 0.0;
+
+  double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
+
+  PWMR = 100 - totalError;
+  PWML = 100 + totalError ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  double PWML_Adjusted = (PWML * 0.4);
+  double PWMR_Adjusted = (PWMR * 0.4) * 1.45;
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR_Adjusted);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+}
+
+
+
+
+/***********************************************-go straight ramp down Long*************************************************************************************************/
+
+void goStraight_RampDownLong(long startTime) {
+  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+    return;
+  }
+
+  delay(10);
+
+  error = getDistanceRight() - getDistanceLeft();
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+  //kp = 9 kd = 13 speed  = 0.4
+  double kp_rd = 9; double ki_rd = 0.0; double kd_rd = 13;
+
+  double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
+
+  PWMR = 100 - totalError;
+  PWML = 100 + totalError ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  double PWML_Adjusted = (PWML * 0.4);
+  double PWMR_Adjusted = (PWMR * 0.4);
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR_Adjusted);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+}
+
+
+/***********************************************-go straight ramp up long*************************************************************************************************/
+
+void goStraight_RampUpLong(long startTime) {
+  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+    return;
+  }
+
+  delay(10);
+
+  error = getDistanceRight() - getDistanceLeft();
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+  //kp = 9 kd = 13 speed  = 0.4
+  double kp_rd = 5.5; double ki_rd = 0.0; double kd_rd = 3.5;
+
+  double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
+
+  PWMR = ((100 - totalError) * 2.4) * 0.50 ;
+  PWML = (100 + totalError ) * 2.4 ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  double PWML_Adjusted = (PWML);
+  double PWMR_Adjusted = (PWMR);
+
+  Serial.print("PWML: "); Serial.print(PWML); Serial.print("    PWMR: "); Serial.println(PWMR);
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR_Adjusted);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+}
+
+
+
+
 double getDistanceLeft() {
 
 
@@ -285,6 +489,10 @@ double getDistanceLeft() {
   delay(100);
   return distanceL;
 }
+
+
+
+
 
 double getDistanceRight() {
 
