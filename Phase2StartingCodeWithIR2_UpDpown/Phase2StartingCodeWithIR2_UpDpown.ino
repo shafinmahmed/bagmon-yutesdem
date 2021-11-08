@@ -254,7 +254,6 @@ void loop() {
   
   ///////////// #1 SMALL STRAIGHT ////////////////////
 
-
   dL = getDistanceLeft();
   dR = getDistanceRight();
 
@@ -336,11 +335,12 @@ void loop() {
 
   allMotorStop();
   delay(500);
-
+  /*
   burstFwd();
   delay(350);
   allMotorStop();
   delay(250);
+  */
 
 
 
@@ -354,7 +354,7 @@ void loop() {
   allMotorStop();
 
   delay(500);
-
+  
   
 
   /////////////// #5 STRAIGHT /////////////
@@ -369,7 +369,7 @@ void loop() {
     dL = UltrasonicLeft();
   }
 
-  while (dL < 15.0 && dR < 15.0) { //this is a redundancy. maybe we can remove?
+  while (dL < 12.0 && dR < 12.0) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
 
     dL = UltrasonicLeft();
@@ -385,12 +385,12 @@ void loop() {
 
   allMotorStop();
   delay(500);
-
+  
   burstFwd();
   delay(350);
   allMotorStop();
   delay(250);
-
+  
 
 
 
@@ -398,7 +398,7 @@ void loop() {
   //////// #6 RIGHT TURN /////////////////////
 
   Reset_Gyro();
-  turnRight90();
+  turnRight90_Acrylic();
 
   allMotorStop();
 
@@ -408,8 +408,8 @@ void loop() {
 
   /////////////// #7 BURST FORWARD ///////////////
 
-  burstFwd();
-  delay(1250);
+  burstFwd_MDF();
+  delay(900);
   allMotorStop();
   delay(500);
 
@@ -422,12 +422,11 @@ void loop() {
   allMotorStop();
 
   delay(500);
-
-  burstFwd();
-  delay(1500);
+  
+  burstFwd_MDF();
+  delay(500);
   allMotorStop();
   delay(500);
-
   
 
   ////////////////////// #9 SHORT RAMPDOWN ///////////////
@@ -469,13 +468,13 @@ void loop() {
   //////////////// #10 RIGHT TURN ////////////////////////////////
   
   Reset_Gyro();
-  turnRight90();
+  turnRight90_MidRamp();
 
   allMotorStop();
 
   delay(500);
 
-  burstFwd();
+  burstFwd_MDF();
   delay(1500);
   allMotorStop();
   delay(500);
@@ -483,9 +482,12 @@ void loop() {
 
 
   ///////////////////////// #11 LONG RAMP DOWN ////////////////////
+
+  long newStartTime = millis();
+  long newEndTime = newStartTime + 20000;
   
-  dL = getDistanceLeft();
-  dR = getDistanceRight();
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
 
   if (dR > 25.00) {
     dR = UltrasonicRight();
@@ -494,11 +496,15 @@ void loop() {
     dL = UltrasonicLeft();
   }
 
-  while (dL < 12.0 && dR < 12.0) { //this is a redundancy. maybe we can remove?
+  while (dL < 25.0 && dR < 25.0) { //this is a redundancy. maybe we can remove?
+    long newTimeNow = millis();
+    if (newTimeNow > newEndTime) {
+      break;
+    }
     goStraight_RampDownLong(millis());
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -511,8 +517,8 @@ void loop() {
   allMotorStop();
   delay(500);
 
-  burstFwd();
-  delay(350);
+  burstFwd_MDF();
+  delay(1000);
   allMotorStop();
   delay(250);
 
@@ -540,7 +546,7 @@ void loop() {
     dL = UltrasonicLeft();
   }
 
-  while (dL < 12.0 && dR < 12.0) { //this is a redundancy. maybe we can remove?
+  while (dL < 25.0 && dR < 25.0) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
 
     dL = getDistanceLeft();
@@ -557,7 +563,7 @@ void loop() {
   allMotorStop();
   delay(500);
 
-  burstFwd();
+  burstFwd_MDF();
   delay(350);
   allMotorStop();
   delay(250);
@@ -567,7 +573,7 @@ void loop() {
   ///////////// #14 RIGHT TURN ///////////////////////////
 
   Reset_Gyro();
-  turnRight90();
+  turnRight90_Acrylic();
 
   allMotorStop();
 
@@ -896,6 +902,18 @@ void burstBkwd() {
 }
 
 
+void burstFwd_MDF() {
+  double PWM_R = 0.85 * (100);
+  double PWM_L = 1.0 * (100);
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWM_L);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWM_R);// set speed at maximum
+}
+
+
 
 
 /***********************************************-go straight *************************************************************************************************/
@@ -1001,7 +1019,7 @@ void goStraight_RampDownShort(long startTime) {
   iError += error * elapsedTime;
   dError = (error - prevError) / (elapsedTime);
   //kp = 6.5 kd = 13 speed  = 0.4
-  double kp_rd = 6.5; double ki_rd = 0.0; double kd_rd = 13;
+  double kp_rd = 4; double ki_rd = 0.0; double kd_rd = 1.7;
 
   double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
 
@@ -1054,7 +1072,7 @@ void goStraight_RampDownLong(long startTime) {
     distL = UltrasonicLeft();
   }
 
-  if (distR > 20.0 || distL > 20.0) { //this is a redundancy. maybe we can remove?
+  if (distR > 35.0 || distL > 35.0) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
@@ -1070,7 +1088,7 @@ void goStraight_RampDownLong(long startTime) {
   iError += error * elapsedTime;
   dError = (error - prevError) / (elapsedTime);
   //kp = 9 kd = 13 speed  = 0.37
-  double kp_rd = 9; double ki_rd = 0.0; double kd_rd = 13;
+  double kp_rd = 9; double ki_rd = 0.0; double kd_rd = 14;
 
   double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
 
@@ -1315,6 +1333,90 @@ void turnRight90() {
 
   /////////////////////////// PULL FORWARD SLIGHTLY //////////////////////////
 
+  burstFwd_MDF();
+  delay(100);
+
+
+  /////////////////////////// PULL BACK SLIGHTLY /////////////////////////////
+  digitalWrite(MotorPinL, CW);// set direction
+  analogWrite(MotorSpeedPinL, 180);// set speed
+  digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, 25);// set speed
+  delay(500);
+  //Serial.print(getYawDeg());
+  double yawInit = getYawDeg();
+  double yawTarget = yawInit - 115;
+
+  while (1) {
+    double theVal = getYawDeg();
+    Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    if (theVal < yawTarget) {
+      allMotorStop();
+      delay(500);
+
+      burstFwd_MDF();
+
+      delay(650);
+
+      allMotorStop();
+
+      return;
+    }
+    else {
+      digitalWrite(MotorPinL, CCW);// set direction
+      analogWrite(MotorSpeedPinL, 145);// set speed
+      digitalWrite(MotorPinR, CW);// set direction
+      analogWrite(MotorSpeedPinR, 95);// set speed
+    }
+  }
+}
+
+void turnRight90_MidRamp() {
+
+  /////////////////////////// PULL FORWARD SLIGHTLY //////////////////////////
+
+  burstFwd_MDF();
+  delay(100);
+
+
+  /////////////////////////// PULL BACK SLIGHTLY /////////////////////////////
+  digitalWrite(MotorPinL, CW);// set direction
+  analogWrite(MotorSpeedPinL, 180);// set speed
+  digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, 25);// set speed
+  delay(500);
+  //Serial.print(getYawDeg());
+  double yawInit = getYawDeg();
+  double yawTarget = yawInit - 110;
+
+  while (1) {
+    double theVal = getYawDeg();
+    Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    if (theVal < yawTarget) {
+      allMotorStop();
+      delay(500);
+
+      burstFwd_MDF();
+
+      delay(650);
+
+      allMotorStop();
+
+      return;
+    }
+    else {
+      digitalWrite(MotorPinL, CCW);// set direction
+      analogWrite(MotorSpeedPinL, 145);// set speed
+      digitalWrite(MotorPinR, CW);// set direction
+      analogWrite(MotorSpeedPinR, 95);// set speed
+    }
+  }
+}
+
+void turnRight90_Acrylic() {
+
+  /////////////////////////// PULL FORWARD SLIGHTLY //////////////////////////
+
   burstFwd();
   delay(500);
 
@@ -1327,7 +1429,7 @@ void turnRight90() {
   delay(500);
   //Serial.print(getYawDeg());
   double yawInit = getYawDeg();
-  double yawTarget = yawInit - 93;
+  double yawTarget = yawInit - 100;
 
   while (1) {
     double theVal = getYawDeg();
