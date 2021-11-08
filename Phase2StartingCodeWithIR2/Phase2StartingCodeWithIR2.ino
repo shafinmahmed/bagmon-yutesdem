@@ -47,14 +47,12 @@ const int CCW = LOW;
 
 
 /********************----IR L pin  decleration ---*******************************************************************************/
-double distanceL;
 const int IRL = 12;
 const int IRLRead = A0;
 /******************************************************************************************************************************/
 
 
 /********************----IR R pin  decleration ---*******************************************************************************/
-double distanceR;
 const int IRR = 13;
 const int IRRRead = A1;
 /******************************************************************************************************************************/
@@ -63,11 +61,21 @@ const int IRRRead = A1;
 
 
 
-/********************----Ultrasonic F pin decleration ---******************************************************************************/
+/********************----Ultrasonic R pin decleration ---******************************************************************************/
 // defines pins numbers
-const int trigpinF = 9;
-const int echopinF = 10;
+const int trigpinR = 9;
+const int echopinR = 10;
 /******************************************************************************************************************************/
+
+
+
+/********************----Ultrasonic L pin decleration ---******************************************************************************/
+// defines pins numbers
+const int trigpinL = 3;
+const int echopinL = 8;
+/******************************************************************************************************************************/
+
+
 
 
 
@@ -122,10 +130,20 @@ void setup() {
 
 
 
-  /********************----Ultrasonic F Setup ---******************************************************************************/
-  pinMode(trigpinF, OUTPUT); // Sets the trigpinF as an Output
-  pinMode(echopinF, INPUT); // Sets the echopinF as an Input
+  /********************----Ultrasonic R Setup ---******************************************************************************/
+  pinMode(trigpinR, OUTPUT); // Sets the trigpinR as an Output
+  pinMode(echopinR, INPUT); // Sets the echopinR as an Input
   /**********************************************************************************************************************/
+
+
+  /********************----Ultrasonic L Setup ---******************************************************************************/
+  pinMode(trigpinL, OUTPUT); // Sets the trigpinL as an Output
+  pinMode(echopinL, INPUT); // Sets the echopinL as an Input
+  /**********************************************************************************************************************/
+
+
+
+
 
 
 
@@ -170,47 +188,167 @@ void setup() {
 }
 
 void loop() {
- /* while ((getDistanceRight() < 20.0) && (getDistanceLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
-     goStraight_RampUpLong(millis());
-    }
-*/
-/*
-  //Serial.print(getDistanceLeft()); Serial.print("     "); Serial.println(getDistanceRight());
-  while ((getDistanceRight() < 20.0) && (getDistanceLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
+  /*
+
+    while ((UltrasonicRight() < 20.0) && (UltrasonicLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
-    }*/
+    Serial.print(getDistanceLeft()); Serial.print("            "); Serial.println(getDistanceRight());
+    }
+    Serial.print(getDistanceLeft()); Serial.print("            "); Serial.println(getDistanceRight());
+
+    allMotorStop();
+    delay(1000);
+
+    burstFwd();
+    delay(2000);
+
+    allMotorStop();
+
+    while (1) {
+
+    }
+  */
+  //getDistanceLeft();
+  //getDistanceRight();
+  //Serial.print("L: "); Serial.print(getDistanceLeft());  Serial.print("    R: "); Serial.println(getDistanceRight());
+  //Serial.print(UltrasonicLeft()); Serial.print("                "); Serial.println(UltrasonicRight());
 
   /*
-      allMotorStop();
-      delay(1000);
-      Reset_Gyro();
+        allMotorStop();
+        delay(1000);
+        Reset_Gyro();
 
-      turnRight90();
+        turnRight90();
 
-      allMotorStop();
-      delay(1000);
-*/
-  while ((getDistanceRight() < 20.0) && (getDistanceLeft() < 20.0)) { //this is a redundancy. maybe we can remove?
-    goStraight(millis());
+        allMotorStop();
+        delay(1000);
+
+  */
+  double dL, dR;
+
+  dL = getDistanceLeft();
+  dR = getDistanceRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
   }
-  
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
 
+  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+    goStraight(millis());
+
+    dL = getDistanceLeft();
+    dR = getDistanceRight();
+
+    if (dR > 25.00) {
+      dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+  Serial.println("Exiting goStraight");
+  allMotorStop();
+
+  burstFwd();
+
+  delay(1000);
+
+  turnLeft90();
+
+  allMotorStop();
+
+  delay(1000);
+
+  dL = getDistanceLeft();
+  dR = getDistanceRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+    goStraight(millis());
+
+    dL = getDistanceLeft();
+    dR = getDistanceRight();
+
+    if (dR > 25.00) {
+      dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+
+  allMotorStop();
+
+  while (1) {
+    allMotorStop();
+  }
+
+
+  //Serial.println(getYawDeg());
+
+  //turnRight90();
+
+  //while (1) {
+
+
+  //}
 
 }
 
+void burstFwd() {
+  double PWM_R = 0.55 * (100);
+  double PWM_L = 1.0 * (100);
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWM_L);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWM_R);// set speed at maximum
+}
+
+
+
+
+/***********************************************-go straight *************************************************************************************************/
 
 void goStraight(long startTime) {
+  double distR, distL;
 
-  if ((getDistanceRight() > 20.0) || (getDistanceLeft() > 20.0)) { //this is a redundancy. maybe we can remove?
+  distR = getDistanceRight();
+  distL = getDistanceLeft();
+  Serial.println("point 1");
+  if (distR > 25.00) {
+    distR = UltrasonicRight();
+    Serial.println("Switching to Ultrasonic Right");
+  }
+  Serial.println("point 2");
+  if (distL > 25.00) {
+    distL = UltrasonicLeft();
+    Serial.println("Switching to Ultrasonic Left");
+  }
+
+  if (distR > 30.0 || distL > 30.0) { //this is a redundancy. maybe we can remove?
     allMotorStop();
+    Serial.println("Stopping motors");
     return;
   }
 
   delay(10);
 
-  error = getDistanceRight() - getDistanceLeft();
+  error = distR - distL;
 
-  Serial.print("ERROR: "); Serial.println(error);
+  Serial.print("Distance L: "); Serial.print(distL); Serial.print("    Distance R: "); Serial.print(distR); Serial.print("    ERROR: "); Serial.println(error);
+
+
 
   long newTime = millis();
 
@@ -239,7 +377,7 @@ void goStraight(long startTime) {
     PWML = 255;
   }
 
-  Serial.print ("PWML: "); Serial.print (PWML); Serial.print ("      PWMR: "); Serial.print (PWMR);
+  //Serial.print ("PWML: "); Serial.print (PWML); Serial.print ("      PWMR: "); Serial.print (PWMR);
   digitalWrite(MotorPinL, CCW);// set direction
   analogWrite(MotorSpeedPinL, PWML);// set speed at maximum
 
@@ -251,75 +389,30 @@ void goStraight(long startTime) {
 
 }
 
-
-
-
-void goStraight_R(long startTime) {
-  if ((getDistanceRight() > 20.0) || (getDistanceLeft() > 20.0)) { //this is a redundancy. maybe we can remove?
-    allMotorStop();
-    return;
-  }
-
-  delay(10);
-
-  error = getDistanceRight() - getDistanceLeft();
-
-  Serial.print("ERROR: "); Serial.println(error);
-
-  long newTime = millis();
-
-  long elapsedTime = newTime - startTime;
-
-  iError += error * elapsedTime;
-  dError = (error - prevError) / (elapsedTime);
-
-  double kp_rd = 7; double ki_rd = 0.0; double kd_rd = 4;
-
-  double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
-
-  PWMR = 100 - totalError;
-  PWML = 100 + totalError ;
-
-  if (PWMR < 0) {
-    PWMR = 0;
-  }
-  if (PWMR > 255) {
-    PWMR = 255;
-  }
-
-
-  if (PWML < 0) {
-    PWML = 0;
-  }
-  if (PWML > 255) {
-    PWML = 255;
-  }
-
-
-  double PWML_Adjusted = (PWML * 0.73);
-  double PWMR_Adjusted = (PWMR * 1.0);
-
-  digitalWrite(MotorPinL, CCW);// set direction
-  analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
-
-  digitalWrite(MotorPinR, CCW);// set direction
-  analogWrite(MotorSpeedPinR, PWMR_Adjusted);// set speed at maximum
-
-  lastPWM_R = PWMR;
-  lastPWM_L = PWML;
-}
-
 /***********************************************-go straight ramp down Short*************************************************************************************************/
 
 void goStraight_RampDownShort(long startTime) {
-  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+
+  double distR, distL;
+
+  distR = getDistanceRight();
+  distL = getDistanceLeft();
+
+  if (distR > 25.00) {
+    distR = UltrasonicRight();
+  }
+  if (distL > 25.00) {
+    distL = UltrasonicLeft();
+  }
+
+  if (distR > 20.0 || distL > 20.0) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
 
   delay(10);
 
-  error = getDistanceRight() - getDistanceLeft();
+  error = distR - distL;
 
   long newTime = millis();
 
@@ -327,8 +420,8 @@ void goStraight_RampDownShort(long startTime) {
 
   iError += error * elapsedTime;
   dError = (error - prevError) / (elapsedTime);
-  //kp = 7 kd = 13 speed  = 0.4
-  double kp_rd = 1.5; double ki_rd = 0.0; double kd_rd = 0.0;
+  //kp = 6.5 kd = 13 speed  = 0.4
+  double kp_rd = 6.5; double ki_rd = 0.0; double kd_rd = 13;
 
   double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
 
@@ -351,7 +444,7 @@ void goStraight_RampDownShort(long startTime) {
   }
 
   double PWML_Adjusted = (PWML * 0.4);
-  double PWMR_Adjusted = (PWMR * 0.4) * 1.45;
+  double PWMR_Adjusted = (PWMR * 0.4) * 1.30;
 
   digitalWrite(MotorPinL, CCW);// set direction
   analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
@@ -369,14 +462,26 @@ void goStraight_RampDownShort(long startTime) {
 /***********************************************-go straight ramp down Long*************************************************************************************************/
 
 void goStraight_RampDownLong(long startTime) {
-  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+  double distR, distL;
+
+  distR = getDistanceRight();
+  distL = getDistanceLeft();
+
+  if (distR > 25.00) {
+    distR = UltrasonicRight();
+  }
+  if (distL > 25.00) {
+    distL = UltrasonicLeft();
+  }
+
+  if (distR > 20.0 || distL > 20.0) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
 
   delay(10);
 
-  error = getDistanceRight() - getDistanceLeft();
+  error = distR - distL;
 
   long newTime = millis();
 
@@ -384,7 +489,7 @@ void goStraight_RampDownLong(long startTime) {
 
   iError += error * elapsedTime;
   dError = (error - prevError) / (elapsedTime);
-  //kp = 9 kd = 13 speed  = 0.4
+  //kp = 9 kd = 13 speed  = 0.37
   double kp_rd = 9; double ki_rd = 0.0; double kd_rd = 13;
 
   double totalError = (kp_rd * error) + (ki_rd * iError) + (kd_rd * dError);
@@ -407,8 +512,8 @@ void goStraight_RampDownLong(long startTime) {
     PWML = 255;
   }
 
-  double PWML_Adjusted = (PWML * 0.4);
-  double PWMR_Adjusted = (PWMR * 0.4);
+  double PWML_Adjusted = (PWML * 0.37);
+  double PWMR_Adjusted = (PWMR * 0.37);
 
   digitalWrite(MotorPinL, CCW);// set direction
   analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
@@ -424,7 +529,7 @@ void goStraight_RampDownLong(long startTime) {
 /***********************************************-go straight ramp up long*************************************************************************************************/
 
 void goStraight_RampUpLong(long startTime) {
-  if ((getDistanceRight() > 30.0) || (getDistanceLeft() > 30.0)) { //this is a redundancy. maybe we can remove?
+  if ((UltrasonicRight() > 20.0) || (UltrasonicLeft() > 20.0)) { //this is a redundancy. maybe we can remove?
     allMotorStop();
     return;
   }
@@ -465,7 +570,7 @@ void goStraight_RampUpLong(long startTime) {
   double PWML_Adjusted = (PWML);
   double PWMR_Adjusted = (PWMR);
 
-  Serial.print("PWML: "); Serial.print(PWML); Serial.print("    PWMR: "); Serial.println(PWMR);
+  //Serial.print("PWML: "); Serial.print(PWML); Serial.print("    PWMR: "); Serial.println(PWMR);
 
   digitalWrite(MotorPinL, CCW);// set direction
   analogWrite(MotorSpeedPinL, PWML_Adjusted);// set speed at maximum
@@ -481,42 +586,33 @@ void goStraight_RampUpLong(long startTime) {
 
 
 double getDistanceLeft() {
-
-
+  String msg;
   digitalWrite(IRL, HIGH);
-  distanceL = analogRead(IRLRead);
+  double distanceL = analogRead(IRLRead);
   distanceL = (distanceL * -0.1499) + 69.793 ;
+  if (distanceL == 69.793) {
+    distanceL = 0;
+  }
+
   delay(100);
   return distanceL;
 }
 
 
 
-
-
 double getDistanceRight() {
-
+  String msg;
   digitalWrite(IRR, HIGH);
-  distanceR = analogRead(IRRRead);
+  double distanceR = analogRead(IRRRead);
   distanceR = (distanceR * -0.1499) + 69.793 ;
+  if (distanceR == 69.793) {
+    distanceR = 0;
+  }
   delay(100);
   return distanceR;
 }
 
-double getDistanceFront() {
-  digitalWrite(trigpinF, LOW);
-  delayMicroseconds(2);
-  // Sets the trigpinF on HIGH state for 10 micro seconds
-  digitalWrite(trigpinF, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigpinF, LOW);
-  // Reads the echopinF, returns the sound wave travel time in microseconds
-  double durationF = pulseIn(echopinF, HIGH);
-  // Calculating the distanceF
-  double distanceF = durationF * 0.0343 / 2;
 
-  return distanceF;
-}
 
 
 double getYawDeg() {
@@ -539,18 +635,19 @@ void allMotorStop() {
 
 void turnLeft90() {
   double yawInit = getYawDeg();
-  double yawTarget = yawInit - 85;
+  double yawTarget = yawInit + 85;
 
   /////////////////////////// PULL BACK SLIGHTLY /////////////////////////////
   digitalWrite(MotorPinL, CW);// set direction
-  analogWrite(MotorSpeedPinL, 50);// set speed
+  analogWrite(MotorSpeedPinL, 30);// set speed
   digitalWrite(MotorPinR, CW);// set direction
-  analogWrite(MotorSpeedPinR, 145);// set speed
+  analogWrite(MotorSpeedPinR, 180);// set speed
   delay(750);
 
   while (1) {
     double theVal = getYawDeg();
-    if (theVal < yawTarget) {
+    Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    if (theVal > yawTarget) {
       allMotorStop();
       delay(500);
 
@@ -597,11 +694,12 @@ void turnRight90() {
   delay(900);
   Serial.print(getYawDeg());
   double yawInit = getYawDeg();
-  double yawTarget = yawInit + 85;
+  double yawTarget = yawInit - 85;
 
   while (1) {
     double theVal = getYawDeg();
-    if (theVal > yawTarget) {
+    Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    if (theVal < yawTarget) {
       allMotorStop();
       delay(500);
 
@@ -609,7 +707,7 @@ void turnRight90() {
       analogWrite(MotorSpeedPinL, 95);// set speed
 
       digitalWrite(MotorPinR, CCW);// set direction
-      analogWrite(MotorSpeedPinR, 145);// set speed
+      analogWrite(MotorSpeedPinR, 190);// set speed
 
       delay(1500);
 
@@ -651,4 +749,39 @@ void Reset_Gyro() {
     Serial.print(devStatus);
     Serial.println(F(")"));
   }
+}
+
+
+
+double UltrasonicLeft() {
+  // Clears the trigpinL
+  digitalWrite(trigpinL, LOW);
+  delayMicroseconds(2);
+  // Sets the trigpinL on HIGH state for 10 micro seconds
+  digitalWrite(trigpinL, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigpinL, LOW);
+  // Reads the echopinL, returns the sound wave travel time in microseconds
+  double durL = pulseIn(echopinL, HIGH);
+  // Calculating the distanceL
+  double distL = durL * 0.0343 / 2;
+  //Serial.print("Ultrasonic L: "); Serial.print(distanceL);
+  return distL;
+}
+
+
+double UltrasonicRight() {
+  digitalWrite(trigpinR, LOW);
+  delayMicroseconds(2);
+  // Sets the trigpinR on HIGH state for 10 micro seconds
+  digitalWrite(trigpinR, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigpinR, LOW);
+  // Reads the echopinR, returns the sound wave travel time in microseconds
+  double durR = pulseIn(echopinR, HIGH);
+  // Calculating the distanceR
+  double distR = durR * 0.0343 / 2;
+  //Serial.print("    Ultrasonic R: "); Serial.println(distanceR);
+
+  return distR;
 }
