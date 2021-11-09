@@ -534,10 +534,10 @@ void loop() {
   delay(500);  
 
   
-
+  */
   ////////////////////////// #13 STRAIGHT ///////////////
-  dL = getDistanceLeft();
-  dR = getDistanceRight();
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
 
   if (dR > 25.00) {
     dR = UltrasonicRight();
@@ -549,8 +549,8 @@ void loop() {
   while (dL < 25.0 && dR < 25.0) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -562,18 +562,17 @@ void loop() {
 
   allMotorStop();
   delay(500);
-
   burstFwd_MDF();
-  delay(350);
+  delay(500);
   allMotorStop();
   delay(250);
 
 
 
   ///////////// #14 RIGHT TURN ///////////////////////////
-
+  
   Reset_Gyro();
-  turnRight90_Acrylic();
+  turnRight90();
 
   allMotorStop();
 
@@ -584,7 +583,7 @@ void loop() {
    ///////////////// #15 BURST FORWARD /////////////////////
 
   burstFwd();
-  delay(1250);
+  delay(1850);
   allMotorStop();
   delay(500);
 
@@ -599,11 +598,15 @@ void loop() {
 
   delay(500); 
 
+  burstFwd();
+  delay(600);
+  allMotorStop();
+
   
 
   ////////////////////////// #17 STRAIGHT ///////////////
-  dL = getDistanceLeft();
-  dR = getDistanceRight();
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
 
   if (dR > 25.00) {
     dR = UltrasonicRight();
@@ -615,8 +618,8 @@ void loop() {
   while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -647,8 +650,8 @@ void loop() {
 
 
   ////////////////////////// #19 STRAIGHT ///////////////
-  dL = getDistanceLeft();
-  dR = getDistanceRight();
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
 
   if (dR > 25.00) {
     dR = UltrasonicRight();
@@ -660,8 +663,8 @@ void loop() {
   while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -678,12 +681,12 @@ void loop() {
   delay(350);
   allMotorStop();
   delay(250);
-
+  
 
   ////////////////////// #20  RIGHT FOLLOW STRAIGHT   (NEED TO TIME THIS)  //////////////////
 
-  dL = getDistanceLeft();
-  dR = getDistanceRight();
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
 
   if (dR > 25.00) {
     dR = UltrasonicRight();
@@ -693,7 +696,7 @@ void loop() {
   }
   
   start = millis();
-  timerOffset = 6200;
+  timerOffset = 4000;
   while (dR < 20.00) {
     
     long ending = millis();
@@ -704,8 +707,8 @@ void loop() {
     
     goStraight_R(millis());
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -723,7 +726,7 @@ void loop() {
   delay(250);
 
 
-
+  
 
   ////////////// #21 LEFT TURN //////////////////
   
@@ -806,7 +809,7 @@ void loop() {
 
   delay(500);
 
-*/
+
    //////////////////////// #26 BURST BACKWARDS ///////////////
   burstBkwd();
   delay(1250);
@@ -832,8 +835,8 @@ void loop() {
   }
 
   start = millis();
-  timerOffset = 10000;
-  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+  timerOffset = 6000;
+  while (1) { //this is a redundancy. maybe we can remove?
         
     long ending = millis();
     
@@ -860,16 +863,18 @@ void loop() {
 
   ////////////////////  #28 PICKUP ACTION ////////////////////
 
+
   burstFwd();
   delay(350);
+  allMotorStop();
   gripperUp();
-  delay(500);
+  delay(350);
   servo_test.detach();
 
 
 
-  allMotorStop();
 
+  
   
 
   while (1) {
@@ -1571,7 +1576,9 @@ void goStraight_R(long startTime) {
 
   Serial.print("Distance L: "); Serial.print(distL); Serial.print("    Distance R: "); Serial.print(distR); Serial.print("    ERROR: "); Serial.println(error);
 
-
+  double kp_R = 3.5;
+  double ki_R = 0;
+  double kd_R = 4.8;
 
   long newTime = millis();
 
@@ -1580,9 +1587,9 @@ void goStraight_R(long startTime) {
   iError += error * elapsedTime;
   dError = (error - prevError) / (elapsedTime);
 
-  double totalError = (kp * error) + (ki * iError) + (kd * dError);
+  double totalError = (kp_R * error) + (ki_R * iError) + (kd_R * dError);
 
-  PWMR = 0.55 * (100 - totalError);
+  PWMR = 0.74 * (100 - totalError);
   PWML = (100 + totalError) ;
 
   if (PWMR < 0) {
@@ -1617,7 +1624,8 @@ void goStraight_Backwards(long startTime) {
   double distR, distL;
 
   double kpBack, kdBack, kiBack;
-  kpBack = 11.5; kiBack = 0; kdBack = 3.0;
+  //kp = 11.5, kd = 3
+  kpBack = 1; kiBack = 0; kdBack = 0;
 
   distR = UltrasonicRight();
   distL = UltrasonicLeft();
@@ -1656,7 +1664,7 @@ void goStraight_Backwards(long startTime) {
 
   double totalError = (kpBack * error) + (kiBack * iError) + (kdBack * dError);
 
-  PWMR = 0.55 * (100 - totalError);
+  PWMR = 0.9 * (100 - totalError);
   PWML = (100 + totalError) ;
 
   if (PWMR < 0) {
