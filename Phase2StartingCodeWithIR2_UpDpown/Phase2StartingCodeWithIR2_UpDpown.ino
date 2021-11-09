@@ -205,7 +205,7 @@ void setup() {
 
 void loop() {
 
-  
+  long start, timerOffset;
   double dL, dR;
   servo_test.write(180);
   delay(100);
@@ -247,7 +247,7 @@ void loop() {
   allMotorStop();
   delay(250);
 
-  */
+  
 
   
   
@@ -340,7 +340,7 @@ void loop() {
   delay(350);
   allMotorStop();
   delay(250);
-  */
+  
 
 
 
@@ -692,8 +692,8 @@ void loop() {
     dL = UltrasonicLeft();
   }
   
-  long start = millis();
-  long timerOffset = 6200;
+  start = millis();
+  timerOffset = 6200;
   while (dR < 20.00) {
     
     long ending = millis();
@@ -806,7 +806,7 @@ void loop() {
 
   delay(500);
 
-
+*/
    //////////////////////// #26 BURST BACKWARDS ///////////////
   burstBkwd();
   delay(1250);
@@ -891,7 +891,7 @@ void burstFwd() {
 }
 
 void burstBkwd() {
-  double PWM_R = 0.55 * (100);
+  double PWM_R = 0.85 * (100);
   double PWM_L = 1.0 * (100);
 
   digitalWrite(MotorPinL, CW);// set direction
