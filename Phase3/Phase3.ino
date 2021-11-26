@@ -249,13 +249,15 @@ void loop() {
 
 
 
+  */
 
 
+  /*
 
     ///////////// #1 SMALL STRAIGHT ////////////////////
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
     dR = UltrasonicRight();
@@ -268,8 +270,8 @@ void loop() {
     while (dL < 20.00 && dR < 20.00) { //this is a redundancy. maybe we can remove?
     goStraight(millis());
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -295,7 +297,7 @@ void loop() {
 
     ////////////////// #2 LEFT TURN /////////////////////////////
 
-    //Reset_Gyro();
+    Reset_Gyro();
 
     turnLeft90();
 
@@ -304,6 +306,7 @@ void loop() {
     delay(500);
 
 
+    /*
 
 
 
@@ -326,16 +329,16 @@ void loop() {
     dR = getDistanceRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
     allMotorStop();
     delay(500);
-    /*
+
     burstFwd();
     delay(350);
     allMotorStop();
@@ -376,10 +379,10 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -448,10 +451,10 @@ void loop() {
     dR = getDistanceRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -499,7 +502,7 @@ void loop() {
     while (dL < 25.0 && dR < 25.0) { //this is a redundancy. maybe we can remove?
     long newTimeNow = millis();
     if (newTimeNow > newEndTime) {
-      break;
+    break;
     }
     goStraight_RampDownLong(millis());
 
@@ -507,10 +510,10 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -553,10 +556,10 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -622,10 +625,10 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -667,10 +670,10 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -702,7 +705,7 @@ void loop() {
     long ending = millis();
 
     if (ending > (start + timerOffset)) {
-      break;
+    break;
     }
 
     goStraight_R(millis());
@@ -711,10 +714,10 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
     allMotorStop();
@@ -759,10 +762,10 @@ void loop() {
     dR = getDistanceRight();
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -822,7 +825,86 @@ void loop() {
     gripperDown();
     delay(500);
 
+
+    ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
+
+    if (dR > 25.00) {
+    dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+    dL = UltrasonicLeft();
+    }
+
+    if (dL > 50) {
+    dL = 0;
+    }
+    if (dR = 50) {
+    dR = 0;
+    }
+
+    start = millis();
+    timerOffset = 6000;
+    while (dR < 12.00 && dL < 12.00) { //this is a redundancy. maybe we can remove?
+
+    //Serial.print("L: "); Serial.print(dL); Serial.print("    R: "); Serial.println(dR);
+
+    long ending = millis();
+
   */
+
+  /*
+    if (ending > (start + timerOffset)) {
+    break;
+    }
+  */
+
+
+  /*
+
+    goStraight_BackwardsDownShort(millis());
+
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
+
+    if (dL > 50) {
+    dL = 0;
+    }
+    if (dR = 50) {
+    dR = 0;
+    }
+
+    if (dR > 25.00) {
+    dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+    dL = UltrasonicLeft();
+    }
+    }
+
+    allMotorStop();
+    delay(500);
+
+
+    /*
+    Reset_Gyro();
+    turnLeft270();
+
+    allMotorStop();
+
+    delay(500);
+
+
+
+  */
+
+  servo_test.attach(11);
+  gripperDown();
+
+  delay(500);
+
+  
   ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
   dL = UltrasonicLeft();
   dR = UltrasonicRight();
@@ -848,17 +930,17 @@ void loop() {
     //Serial.print("L: "); Serial.print(dL); Serial.print("    R: "); Serial.println(dR);
 
     long ending = millis();
-    if (dR > 25.00 || dL > 25.00) {
+    if (dR > 15.00 || dL > 15.00) {
       break;
     }
-    /*
-      if (ending > (start + timerOffset)) {
+
+    if (ending > (start + timerOffset)) {
       break;
-      }
-    */
+    }
 
 
-    goStraight_BackwardsDownShort(millis());
+
+    goStraight_Backwards(millis());
 
     dL = UltrasonicLeft();
     dR = UltrasonicRight();
@@ -878,9 +960,10 @@ void loop() {
     }
   }
 
-  allMotorStop();
-  delay(500);
-  /*
+
+
+
+  
 
     ////////////////////  #28 PICKUP ACTION ////////////////////
 
@@ -893,7 +976,7 @@ void loop() {
     servo_test.detach();
 
 
-  */
+ 
 
 
 
@@ -1275,6 +1358,9 @@ void turnLeft90() {
   analogWrite(MotorSpeedPinR, 180);// set speed
   delay(400);
 
+  long theStart = millis();
+  long theEnd = theStart + 3000;
+
   while (1) {
     double theVal = getYawDeg();
     Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
@@ -1560,7 +1646,9 @@ void gripperUp() {
   {
     Serial.println(angle);
     servo_test.write(angle);                 //command to rotate the servo to the specified angle
-    delay(45);
+    //delay(45);
+    //delay(3);
+    
   }
   Serial.print("gripperDown");
 }
@@ -1726,6 +1814,86 @@ void goStraight_BackwardsDownShort(long startTime) {
   double kpBack, kdBack, kiBack;
   //kp = 1, kd = 0
   kpBack = 3; kiBack = 0; kdBack = 0;
+
+  distR = getDistanceRight();
+  distL = getDistanceLeft();
+
+  if (distR > 25.00) {
+    distR = UltrasonicRight();
+
+  }
+
+  if (distL > 25.00) {
+    distL = UltrasonicLeft();
+
+  }
+
+  //Serial.print("L: "); Serial.print(distL); Serial.print("    R: "); Serial.println(distR);
+
+  if (distR > 30.0 || distL > 30.0) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+
+    return;
+  }
+
+  delay(10);
+
+  error = distR - distL;
+
+  //Serial.print("Distance L: "); Serial.print(distL); Serial.print("    Distance R: "); Serial.print(distR); Serial.print("    ERROR: "); Serial.println(error);
+
+
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+
+  double totalError = (kpBack * error) + (kiBack * iError) + (kdBack * dError);
+
+  PWMR = 0.50 * (100 - totalError);
+  PWML = (100 + totalError) ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  //Serial.print ("PWML: "); Serial.print (PWML); Serial.print ("      PWMR: "); Serial.print (PWMR);
+  digitalWrite(MotorPinL, CW);// set direction
+  analogWrite(MotorSpeedPinL, PWML);// set speed at maximum
+
+  digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+
+}
+
+
+
+
+
+
+void goStraight_BackwardsDownLong(long startTime) {
+  double distR, distL;
+
+  double kpBack, kdBack, kiBack;
+  //kp = 3, kd = 0
+  kpBack = 1.5; kiBack = 0; kdBack = 0;
 
   distR = getDistanceRight();
   distL = getDistanceLeft();
