@@ -358,7 +358,7 @@ void loop() {
 
     delay(500);
 
-
+    */
 
     /////////////// #5 STRAIGHT /////////////
 
@@ -390,7 +390,7 @@ void loop() {
     delay(500);
 
     burstFwd();
-    delay(350);
+    delay(1150);
     allMotorStop();
     delay(250);
 
@@ -401,7 +401,7 @@ void loop() {
     //////// #6 RIGHT TURN /////////////////////
 
     Reset_Gyro();
-    turnRight90_Acrylic();
+    turnLeftBackwards90();
 
     allMotorStop();
 
@@ -411,11 +411,13 @@ void loop() {
 
     /////////////// #7 BURST FORWARD ///////////////
 
-    burstFwd_MDF();
-    delay(900);
+    burstBkwd();
+    delay(1150);
     allMotorStop();
     delay(500);
 
+
+    /*
 
     //////////////////// #8 RIGHT TURN //////////////////
 
@@ -431,42 +433,44 @@ void loop() {
     allMotorStop();
     delay(500);
 
+  
+  ////////////////////// #9 SHORT RAMPDOWN ///////////////
 
-    ////////////////////// #9 SHORT RAMPDOWN ///////////////
+  dL = getDistanceLeft();
+  dR = getDistanceRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+    goStraight_BackwardsDownShort(millis());
 
     dL = getDistanceLeft();
     dR = getDistanceRight();
 
     if (dR > 25.00) {
-    dR = UltrasonicRight();
+      dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-    dL = UltrasonicLeft();
+      dL = UltrasonicLeft();
     }
+  }
 
-    while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
-    goStraight_RampDownShort(millis());
+  allMotorStop();
+  delay(500);
 
-    dL = getDistanceLeft();
-    dR = getDistanceRight();
+  burstFwd();
+  delay(1000);
+  allMotorStop();
+  delay(250);
 
-    if (dR > 25.00) {
-    dR = UltrasonicRight();
-    }
-    if (dL > 25.00) {
-    dL = UltrasonicLeft();
-    }
-    }
+  */
 
-    allMotorStop();
-    delay(500);
-
-    burstFwd();
-    delay(1000);
-    allMotorStop();
-    delay(250);
-
-
+  /*
 
     //////////////// #10 RIGHT TURN ////////////////////////////////
 
@@ -482,8 +486,9 @@ void loop() {
     allMotorStop();
     delay(500);
 
+  */
 
-
+  /*
     ///////////////////////// #11 LONG RAMP DOWN ////////////////////
 
     long newStartTime = millis();
@@ -525,7 +530,9 @@ void loop() {
     allMotorStop();
     delay(250);
 
+  */
 
+  /*
 
     //////////// #12 RIGHT TURN //////////////////////
 
@@ -899,33 +906,34 @@ void loop() {
 
   */
 
-  servo_test.attach(11);
-  gripperDown();
+  /*
+    servo_test.attach(11);
+    gripperDown();
 
-  delay(500);
+    delay(500);
 
-  
-  ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
-  dL = UltrasonicLeft();
-  dR = UltrasonicRight();
 
-  if (dR > 25.00) {
-    dR = UltrasonicRight();
-  }
-  if (dL > 25.00) {
+    ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
     dL = UltrasonicLeft();
-  }
+    dR = UltrasonicRight();
 
-  if (dL > 50) {
+    if (dR > 25.00) {
+    dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+    dL = UltrasonicLeft();
+    }
+
+    if (dL > 50) {
     dL = 0;
-  }
-  if (dR = 50) {
+    }
+    if (dR = 50) {
     dR = 0;
-  }
+    }
 
-  start = millis();
-  timerOffset = 6000;
-  while (1) { //this is a redundancy. maybe we can remove?
+    start = millis();
+    timerOffset = 6000;
+    while (1) { //this is a redundancy. maybe we can remove?
 
     //Serial.print("L: "); Serial.print(dL); Serial.print("    R: "); Serial.println(dR);
 
@@ -958,12 +966,12 @@ void loop() {
     if (dL > 25.00) {
       dL = UltrasonicLeft();
     }
-  }
+    }
 
 
 
 
-  
+
 
     ////////////////////  #28 PICKUP ACTION ////////////////////
 
@@ -976,8 +984,8 @@ void loop() {
     servo_test.detach();
 
 
- 
 
+  */
 
 
 
@@ -1441,6 +1449,45 @@ void turnLeft270() {
   }
 }
 
+void turnLeftBackwards90() {
+  double yawInit = getYawDeg();
+  double yawTarget = yawInit + 90;
+
+  while (1) {
+    double theVal = getYawDeg();
+    Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    if (theVal > yawTarget) {
+      allMotorStop();
+      delay(500);
+
+      /*
+
+        digitalWrite(MotorPinL, CW);// set direction
+        analogWrite(MotorSpeedPinL, 95);// set speed
+
+        digitalWrite(MotorPinR, CW);// set direction
+        analogWrite(MotorSpeedPinR, 145);// set speed
+
+
+        delay(1250);
+
+      */
+
+      allMotorStop();
+
+      return;
+    }
+    else {
+      digitalWrite(MotorPinL, CW);// set direction
+      analogWrite(MotorSpeedPinL, 160);// set speed
+      digitalWrite(MotorPinR, CCW);// set direction
+      analogWrite(MotorSpeedPinR, 50);// set speed
+    }
+  }
+}
+
+
+
 void turnRight90() {
 
   /////////////////////////// PULL FORWARD SLIGHTLY //////////////////////////
@@ -1648,7 +1695,7 @@ void gripperUp() {
     servo_test.write(angle);                 //command to rotate the servo to the specified angle
     //delay(45);
     //delay(3);
-    
+
   }
   Serial.print("gripperDown");
 }
