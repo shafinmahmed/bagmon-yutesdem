@@ -358,7 +358,7 @@ void loop() {
 
     delay(500);
 
-    */
+    
 
     /////////////// #5 STRAIGHT /////////////
 
@@ -906,11 +906,13 @@ void loop() {
 
   */
 
-  /*
+  
     servo_test.attach(11);
     gripperDown();
 
-    delay(500);
+    delay(1500);
+
+    /*
 
 
     ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
@@ -979,20 +981,21 @@ void loop() {
     burstFwd();
     delay(350);
     allMotorStop();
+    */
     gripperUp();
-    delay(350);
-    servo_test.detach();
+    delay(1500);
+    //servo_test.detach();
 
 
 
-  */
+  
 
 
-
+/*
   while (1) {
     allMotorStop();
   }
-
+*/
 
 }
 
@@ -1688,8 +1691,8 @@ double UltrasonicRight() {
 /***********************************************-ramp down*************************************************************************************************/
 
 void gripperUp() {
-  int angle = 0;
-  for (angle = 0; angle < 180; angle += 1)
+  int angle = 50;
+  for (angle = 50; angle < 180; angle += 1)
   {
     Serial.println(angle);
     servo_test.write(angle);                 //command to rotate the servo to the specified angle
@@ -1702,10 +1705,10 @@ void gripperUp() {
 /***********************************************-ramp down*************************************************************************************************/
 void gripperDown() {
   int angle = 180;
-  for (angle = 180; angle > 0; angle -= 1)
+  for (angle = 180; angle > 50; angle -= 1)
   {
     servo_test.write(angle);                 //command to rotate the servo to the specified angle
-    delay(15);
+    //delay(15);
   }
 }
 
