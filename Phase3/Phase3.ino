@@ -117,7 +117,7 @@ void dmpDataReady() {
 void setup() {
   // put your setup code here, to run once:
   /********************----Servo  Setup ---*******************************************************************************/
-  servo_test.attach(11);      // attach the signal pin of servo to pin 11 of arduino
+  //servo_test.attach(11);      // attach the signal pin of servo to pin 11 of arduino
   /**********************************************************************************************************************/
 
 
@@ -205,14 +205,19 @@ void setup() {
 
 void loop() {
 
-  long start, timerOffset;
+  long startTime, timerOffset;
   double dL, dR;
-  servo_test.write(180);
+  //servo_test.write(180);
   delay(100);
-  //gripperUp();
-  servo_test.detach();
-  /*
 
+
+
+
+
+  //gripperUp();
+  /*
+    servo_test.detach();
+    /*
 
     dL = UltrasonicLeft();
     dR = UltrasonicRight();
@@ -251,8 +256,8 @@ void loop() {
 
   */
 
-
   /*
+
 
     ///////////// #1 SMALL STRAIGHT ////////////////////
 
@@ -358,7 +363,7 @@ void loop() {
 
     delay(500);
 
-    
+
 
     /////////////// #5 STRAIGHT /////////////
 
@@ -433,20 +438,20 @@ void loop() {
     allMotorStop();
     delay(500);
 
-  
-  ////////////////////// #9 SHORT RAMPDOWN ///////////////
 
-  dL = getDistanceLeft();
-  dR = getDistanceRight();
+    ////////////////////// #9 SHORT RAMPDOWN ///////////////
 
-  if (dR > 25.00) {
+    dL = getDistanceLeft();
+    dR = getDistanceRight();
+
+    if (dR > 25.00) {
     dR = UltrasonicRight();
-  }
-  if (dL > 25.00) {
+    }
+    if (dL > 25.00) {
     dL = UltrasonicLeft();
-  }
+    }
 
-  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+    while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
     goStraight_BackwardsDownShort(millis());
 
     dL = getDistanceLeft();
@@ -458,15 +463,15 @@ void loop() {
     if (dL > 25.00) {
       dL = UltrasonicLeft();
     }
-  }
+    }
 
-  allMotorStop();
-  delay(500);
+    allMotorStop();
+    delay(500);
 
-  burstFwd();
-  delay(1000);
-  allMotorStop();
-  delay(250);
+    burstFwd();
+    delay(1000);
+    allMotorStop();
+    delay(250);
 
   */
 
@@ -906,14 +911,23 @@ void loop() {
 
   */
 
-  
+    /*
+
     servo_test.attach(11);
     gripperDown();
 
+
+
+
     delay(1500);
 
-    /*
 
+
+    servo_test.detach();
+
+
+  
+  
 
     ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
     dL = UltrasonicLeft();
@@ -929,22 +943,24 @@ void loop() {
     if (dL > 50) {
     dL = 0;
     }
-    if (dR = 50) {
+    if (dR > 50) {
     dR = 0;
     }
 
-    start = millis();
-    timerOffset = 6000;
+    startTime = millis();
+    timerOffset = 10000;
     while (1) { //this is a redundancy. maybe we can remove?
 
-    //Serial.print("L: "); Serial.print(dL); Serial.print("    R: "); Serial.println(dR);
+    Serial.print("L: "); Serial.print(dL); Serial.print("    R: "); Serial.println(dR);
 
     long ending = millis();
     if (dR > 15.00 || dL > 15.00) {
+      burstBkwd_Fast();
       break;
     }
 
-    if (ending > (start + timerOffset)) {
+    if (ending > (startTime + timerOffset)) {
+      burstBkwd_Fast();
       break;
     }
 
@@ -978,25 +994,101 @@ void loop() {
     ////////////////////  #28 PICKUP ACTION ////////////////////
 
 
+
     burstFwd();
     delay(350);
     allMotorStop();
-    */
+
+    servo_test.attach(11);
+
     gripperUp();
     delay(1500);
-    //servo_test.detach();
+    servo_test.detach();
 
+
+
+
+
+ 
+
+
+
+
+
+  */
+
+
+
+
+
+      dL = UltrasonicLeft();
+      dR = UltrasonicRight();
+
+      if (dR > 25.00) {
+      dR = UltrasonicRight();
+      }
+      if (dL > 25.00) {
+      dL = UltrasonicLeft();
+      }
+
+      while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+      goStraight_Backwards(millis());
+
+      dL = UltrasonicLeft();
+      dR = UltrasonicRight();
+
+      if (dR > 25.00) {
+        dR = UltrasonicRight();
+      }
+      if (dL > 25.00) {
+        dL = UltrasonicLeft();
+      }
+      }
+
+      allMotorStop();
+      delay(500);
+
+
+
+      Reset_Gyro();
+
+      turnLeftBackwards90();
+
+      allMotorStop();
 
 
   
 
 
-/*
+
   while (1) {
     allMotorStop();
   }
-*/
 
+
+}
+
+
+
+
+//Functions
+
+
+
+
+
+
+
+
+void burstBkwd_Fast() {
+  double PWM_R = 1.0 * (255);
+  double PWM_L = 1.0 * (255);
+
+  digitalWrite(MotorPinL, CW);// set direction
+  analogWrite(MotorSpeedPinL, PWM_L);// set speed at maximum
+
+  digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, PWM_R);// set speed at maximum
 }
 
 void burstFwd() {
@@ -1452,39 +1544,42 @@ void turnLeft270() {
   }
 }
 
+
 void turnLeftBackwards90() {
   double yawInit = getYawDeg();
-  double yawTarget = yawInit + 90;
+  double yawTarget = yawInit + 82.0;
+
+  long newStart = millis();
 
   while (1) {
     double theVal = getYawDeg();
-    Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    //Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    Serial.println(millis() - newStart);
+    if (millis() > (newStart + 5250)) {
+      allMotorStop();
+      break;
+    }
+
+    
+    
     if (theVal > yawTarget) {
       allMotorStop();
-      delay(500);
+      //delay(500);
 
-      /*
+      //burstFwd_MDF();
 
-        digitalWrite(MotorPinL, CW);// set direction
-        analogWrite(MotorSpeedPinL, 95);// set speed
-
-        digitalWrite(MotorPinR, CW);// set direction
-        analogWrite(MotorSpeedPinR, 145);// set speed
-
-
-        delay(1250);
-
-      */
+      delay(650);
 
       allMotorStop();
 
       return;
+      
     }
     else {
       digitalWrite(MotorPinL, CW);// set direction
-      analogWrite(MotorSpeedPinL, 160);// set speed
+      analogWrite(MotorSpeedPinL, 145);// set speed
       digitalWrite(MotorPinR, CCW);// set direction
-      analogWrite(MotorSpeedPinR, 50);// set speed
+      analogWrite(MotorSpeedPinR, 10);// set speed
     }
   }
 }
@@ -1788,8 +1883,8 @@ void goStraight_Backwards(long startTime) {
   double distR, distL;
 
   double kpBack, kdBack, kiBack;
-  //kp = 11.5, kd = 3
-  kpBack = 1; kiBack = 0; kdBack = 0;
+  //kp = 1, kd = 0
+  kpBack = 1.5; kiBack = 0; kdBack = 0;
 
   distR = UltrasonicRight();
   distL = UltrasonicLeft();
@@ -1828,7 +1923,7 @@ void goStraight_Backwards(long startTime) {
 
   double totalError = (kpBack * error) + (kiBack * iError) + (kdBack * dError);
 
-  PWMR = 0.9 * (100 - totalError);
+  PWMR = 0.8 * (100 - totalError);
   PWML = (100 + totalError) ;
 
   if (PWMR < 0) {
