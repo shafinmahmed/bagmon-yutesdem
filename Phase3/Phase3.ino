@@ -911,7 +911,7 @@ void loop() {
 
   */
 
-    /*
+  /*
 
     servo_test.attach(11);
     gripperDown();
@@ -926,8 +926,8 @@ void loop() {
     servo_test.detach();
 
 
-  
-  
+
+
 
     ////////////// #27 BACKWARDS STRAIGHT (NEED TO TIME THIS) ////////////////////
     dL = UltrasonicLeft();
@@ -955,13 +955,13 @@ void loop() {
 
     long ending = millis();
     if (dR > 15.00 || dL > 15.00) {
-      burstBkwd_Fast();
-      break;
+    burstBkwd_Fast();
+    break;
     }
 
     if (ending > (startTime + timerOffset)) {
-      burstBkwd_Fast();
-      break;
+    burstBkwd_Fast();
+    break;
     }
 
 
@@ -972,17 +972,17 @@ void loop() {
     dR = UltrasonicRight();
 
     if (dL > 50) {
-      dL = 0;
+    dL = 0;
     }
     if (dR = 50) {
-      dR = 0;
+    dR = 0;
     }
 
     if (dR > 25.00) {
-      dR = UltrasonicRight();
+    dR = UltrasonicRight();
     }
     if (dL > 25.00) {
-      dL = UltrasonicLeft();
+    dL = UltrasonicLeft();
     }
     }
 
@@ -1009,7 +1009,7 @@ void loop() {
 
 
 
- 
+
 
 
 
@@ -1017,47 +1017,306 @@ void loop() {
 
   */
 
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
 
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
 
+  if (dL > 50) {
+    dL = 0;
+  }
+  if (dR > 50) {
+    dR = 0;
+  }
 
+  startTime = millis();
+  timerOffset = 10000;
+  while (1) { //this is a redundancy. maybe we can remove?
 
-      dL = UltrasonicLeft();
-      dR = UltrasonicRight();
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
 
-      if (dR > 25.00) {
-      dR = UltrasonicRight();
-      }
-      if (dL > 25.00) {
-      dL = UltrasonicLeft();
-      }
-
-      while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
-      goStraight_Backwards(millis());
-
-      dL = UltrasonicLeft();
-      dR = UltrasonicRight();
-
-      if (dR > 25.00) {
-        dR = UltrasonicRight();
-      }
-      if (dL > 25.00) {
-        dL = UltrasonicLeft();
-      }
-      }
-
+    if (dL > 20.00 || dR > 20.00) {
       allMotorStop();
+      break;
+    }
+
+    goStraight_Backwards(millis());
+
+    if (dL > 50) {
+      dL = 0;
+    }
+    if (dR = 50) {
+      dR = 0;
+    }
+
+    if (dR > 25.00) {
+      dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+
+
+  burstFwd();
+  delay(150);
+  allMotorStop();
+
+  Reset_Gyro();
+  delay(500);
+  turnRightBackwards90();
+  allMotorStop();
+  delay(500);
+  burstBkwd();
+  delay(1000);
+  allMotorStop();
+
+  int recovCnt = 0;
+
+recovery:
+  recovCnt++;
+
+  if (recovCnt > 2) {
+    goto endrecovery;
+  }
+
+  //dL = UltrasonicLeft();
+  dR = UltrasonicRight();
+
+
+
+  if (dR > 25.00) {
+    //dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  startTime = millis();
+
+  int myCounter = 0;
+  bool gap1 = false;
+  bool gap2 = false;
+  bool RecoveryCount = false;
+
+  while (1) { //this is a redundancy. maybe we can remove?
+    if (millis() > (startTime + 20000)) {
+      allMotorStop();
+      break;
+    }
+    goStraight_Backwards_L(millis());
+
+
+
+    //dL = UltrasonicLeft();
+
+    if (dL > 20.0) {
+      RecoveryCount = true;
+      //myCounter++;
+    }
+
+    if ((dL < 10) && (RecoveryCount == true)) {
+      myCounter++;
+
+    }
+    RecoveryCount = false;
+    //dR = UltrasonicRight();
+    /*
+      if (dR > 25.00) {
+      dR = UltrasonicRight();
+      }
+      if (dL > 25.00) {
+      dL = UltrasonicLeft();
+      }
+    */
+  }
+
+  allMotorStop();
+  delay(500);
+
+  /*
+    if (myCounter < 1) {
+      burstFwd();
       delay(500);
-
-
-
-      Reset_Gyro();
-
-      turnLeftBackwards90();
-
       allMotorStop();
+      goto recovery;
+    }
+  */
+
+endrecovery:
 
 
+  burstFwd();
+  delay(3000);
+
+
+  allMotorStop();
+  delay(200);
+
+  servo_test.attach(11);
+  gripperDown();
+
+
+
+
+  delay(1500);
+
+
+
+  servo_test.detach();
+
+
+
+  burstBkwd();
+  delay(6000);
+
+  burstFwd();
+  delay(350);
+  allMotorStop();
+
+  servo_test.attach(11);
+
+  gripperUp();
+  delay(3000);
+  servo_test.detach();
+
+
+  burstBkwd();
+
+  delay(1000);
+
+  allMotorStop();
+  delay(100);
+
+  turnRightBackwards90();
+
+  allMotorStop();
+
+  delay(500);
+
+
+
+
+
+
+
+
+dR = UltrasonicRight();
+
+
+
+  if (dR > 25.00) {
+    //dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  startTime = millis();
+
+
+while (1) { //this is a redundancy. maybe we can remove?
+    if (millis() > (startTime + 2500)) {
+      allMotorStop();
+      break;
+    }
+    goStraight_Backwards_L(millis());
+  }
+
+  allMotorStop();
+  delay(500);  
+
+
+
+
+
+
+
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+    goStraight_BackwardsDownShort(millis());
+
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
+
+    if (dR > 25.00) {
+      dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+
+  allMotorStop();
+  delay(500);
+
+
+  Reset_Gyro();
+  turnRightBackwards90();
+
+  burstBkwd();
+
+  delay(3000);
+
+  allMotorStop();
+
+  delay(200);
+
+
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
+    goStraight_BackwardsDownShort(millis());
+
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
+
+    if (dR > 25.00) {
+      dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+
+  allMotorStop();
+  delay(500);
   
+
+
+  /*
+
+    Reset_Gyro();
+
+    turnLeftBackwards90();
+
+    allMotorStop();
+
+
+  */
 
 
 
@@ -1092,6 +1351,17 @@ void burstBkwd_Fast() {
 }
 
 void burstFwd() {
+  double PWM_R = 0.85 * (100);
+  double PWM_L = 1.0 * (100);
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWM_L);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
+  analogWrite(MotorSpeedPinR, PWM_R);// set speed at maximum
+}
+
+void burstFwd_R() {
   double PWM_R = 0.65 * (100);
   double PWM_L = 1.0 * (100);
 
@@ -1103,13 +1373,24 @@ void burstFwd() {
 }
 
 void burstBkwd() {
-  double PWM_R = 0.85 * (100);
+  double PWM_R = 0.825 * (100);
   double PWM_L = 1.0 * (100);
 
   digitalWrite(MotorPinL, CW);// set direction
   analogWrite(MotorSpeedPinL, PWM_L);// set speed at maximum
 
   digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, PWM_R);// set speed at maximum
+}
+
+void burstFwd_L() {
+  double PWM_R = 0.65 * (100);
+  double PWM_L = 1.0 * (100);
+
+  digitalWrite(MotorPinL, CCW);// set direction
+  analogWrite(MotorSpeedPinL, PWM_L);// set speed at maximum
+
+  digitalWrite(MotorPinR, CCW);// set direction
   analogWrite(MotorSpeedPinR, PWM_R);// set speed at maximum
 }
 
@@ -1560,8 +1841,8 @@ void turnLeftBackwards90() {
       break;
     }
 
-    
-    
+
+
     if (theVal > yawTarget) {
       allMotorStop();
       //delay(500);
@@ -1573,13 +1854,53 @@ void turnLeftBackwards90() {
       allMotorStop();
 
       return;
-      
+
     }
     else {
       digitalWrite(MotorPinL, CW);// set direction
       analogWrite(MotorSpeedPinL, 145);// set speed
       digitalWrite(MotorPinR, CCW);// set direction
       analogWrite(MotorSpeedPinR, 10);// set speed
+    }
+  }
+}
+
+
+void turnRightBackwards90() {
+  double yawInit = getYawDeg();
+  double yawTarget = yawInit - 70.0;
+
+  long newStart = millis();
+
+  while (1) {
+    double theVal = getYawDeg();
+    //Serial.print(theVal); Serial.print("     "); Serial.println(yawTarget);
+    Serial.println(millis() - newStart);
+    if (millis() > (newStart + 5250)) {
+      allMotorStop();
+      break;
+    }
+
+
+
+    if (theVal < yawTarget) {
+      allMotorStop();
+      //delay(500);
+
+      //burstFwd_MDF();
+
+      delay(650);
+
+      allMotorStop();
+
+      return;
+
+    }
+    else {
+      digitalWrite(MotorPinL, CCW);// set direction
+      analogWrite(MotorSpeedPinL, 10);// set speed
+      digitalWrite(MotorPinR, CW);// set direction
+      analogWrite(MotorSpeedPinR, 145);// set speed
     }
   }
 }
@@ -1952,6 +2273,170 @@ void goStraight_Backwards(long startTime) {
   lastPWM_L = PWML;
 
 }
+
+
+
+
+
+
+
+void goStraight_Backwards_R(long startTime) {
+  double distR, distL;
+
+  double kpBack, kdBack, kiBack;
+  //kp = 1, kd = 0
+  kpBack = 1.5; kiBack = 0; kdBack = 0;
+
+  distR = UltrasonicRight();
+  distL = UltrasonicLeft();
+  Serial.print("L: "); Serial.print(distL); Serial.print("    R: "); Serial.println(distR);
+
+  if (distR > 25.00) {
+    distR = UltrasonicRight();
+
+  }
+
+  if (distL > 25.00) {
+    distL = UltrasonicLeft();
+
+  }
+
+  if (distR > 30.0 || distL > 30.0) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+
+    return;
+  }
+
+  delay(10);
+
+  error = distL - 6.0;
+
+  //Serial.print("Distance L: "); Serial.print(distL); Serial.print("    Distance R: "); Serial.print(distR); Serial.print("    ERROR: "); Serial.println(error);
+
+
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+
+  double totalError = (kpBack * error) + (kiBack * iError) + (kdBack * dError);
+
+  PWMR = 0.8 * (100 - totalError);
+  PWML = (100 + totalError) ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  //Serial.print ("PWML: "); Serial.print (PWML); Serial.print ("      PWMR: "); Serial.print (PWMR);
+  digitalWrite(MotorPinL, CW);// set direction
+  analogWrite(MotorSpeedPinL, PWML);// set speed at maximum
+
+  digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+
+}
+
+
+
+
+
+void goStraight_Backwards_L(long startTime) {
+  double distR, distL;
+
+  double kpBack, kdBack, kiBack;
+  //kp = 1, kd = 0
+  kpBack = 2.0; kiBack = 0; kdBack = 2;
+
+  distR = UltrasonicRight();
+  distL = UltrasonicLeft();
+  Serial.print("L: "); Serial.print(distL); Serial.print("    R: "); Serial.println(distR);
+
+  if (distR > 25.00) {
+    distR = UltrasonicRight();
+
+  }
+
+  if (distL > 25.00) {
+    distL = UltrasonicLeft();
+
+  }
+
+  if (distR > 30.0 || distL > 30.0) { //this is a redundancy. maybe we can remove?
+    allMotorStop();
+
+    return;
+  }
+
+  delay(10);
+
+  error = distR - 2.5;
+
+  //Serial.print("Distance L: "); Serial.print(distL); Serial.print("    Distance R: "); Serial.print(distR); Serial.print("    ERROR: "); Serial.println(error);
+
+
+
+  long newTime = millis();
+
+  long elapsedTime = newTime - startTime;
+
+  iError += error * elapsedTime;
+  dError = (error - prevError) / (elapsedTime);
+
+  double totalError = (kpBack * error) + (kiBack * iError) + (kdBack * dError);
+
+  PWMR = 0.8 * (100 - totalError);
+  PWML = (100 + totalError) ;
+
+  if (PWMR < 0) {
+    PWMR = 0;
+  }
+  if (PWMR > 255) {
+    PWMR = 255;
+  }
+
+
+  if (PWML < 0) {
+    PWML = 0;
+  }
+  if (PWML > 255) {
+    PWML = 255;
+  }
+
+  //Serial.print ("PWML: "); Serial.print (PWML); Serial.print ("      PWMR: "); Serial.print (PWMR);
+  digitalWrite(MotorPinL, CW);// set direction
+  analogWrite(MotorSpeedPinL, PWML);// set speed at maximum
+
+  digitalWrite(MotorPinR, CW);// set direction
+  analogWrite(MotorSpeedPinR, PWMR);// set speed at maximum
+
+  lastPWM_R = PWMR;
+  lastPWM_L = PWML;
+
+}
+
+
+
+
+
+
 
 void goStraight_BackwardsDownShort(long startTime) {
   double distR, distL;
