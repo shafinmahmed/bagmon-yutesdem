@@ -1017,6 +1017,15 @@ void loop() {
 
   */
 
+
+
+
+
+
+
+
+  
+
   dL = UltrasonicLeft();
   dR = UltrasonicRight();
 
@@ -1065,7 +1074,7 @@ void loop() {
 
 
   burstFwd();
-  delay(150);
+  delay(200);
   allMotorStop();
 
   Reset_Gyro();
@@ -1194,6 +1203,8 @@ endrecovery:
   allMotorStop();
   delay(100);
 
+
+  Reset_Gyro();
   turnRightBackwards90();
 
   allMotorStop();
@@ -1207,7 +1218,7 @@ endrecovery:
 
 
 
-dR = UltrasonicRight();
+  dR = UltrasonicRight();
 
 
 
@@ -1221,8 +1232,8 @@ dR = UltrasonicRight();
   startTime = millis();
 
 
-while (1) { //this is a redundancy. maybe we can remove?
-    if (millis() > (startTime + 2500)) {
+  while (1) { //this is a redundancy. maybe we can remove?
+    if (millis() > (startTime + 1500)) {
       allMotorStop();
       break;
     }
@@ -1230,7 +1241,41 @@ while (1) { //this is a redundancy. maybe we can remove?
   }
 
   allMotorStop();
-  delay(500);  
+  delay(500);
+
+
+
+
+
+  Reset_Gyro();
+  turnRightBackwards90();
+  allMotorStop();
+  delay(500);
+  burstFwd();
+  delay(500);
+  allMotorStop();
+  delay(500);
+  servo_test.attach(11);
+  gripperDown();
+  delay(1500);
+  servo_test.detach();
+  burstFwd();
+  delay(1500);
+  allMotorStop();
+  servo_test.attach(11);
+  gripperUp();
+  delay(1500);
+  servo_test.detach();
+  delay(500);
+  Reset_Gyro();
+  turnLeftBackwards90();
+  allMotorStop();
+  delay(500);
+  burstBkwd();
+  delay(1500);
+  allMotorStop();
+  delay(500);
+
 
 
 
@@ -1304,7 +1349,7 @@ while (1) { //this is a redundancy. maybe we can remove?
 
   allMotorStop();
   delay(500);
-  
+
 
 
   /*
@@ -1868,7 +1913,7 @@ void turnLeftBackwards90() {
 
 void turnRightBackwards90() {
   double yawInit = getYawDeg();
-  double yawTarget = yawInit - 70.0;
+  double yawTarget = yawInit - 80.0;
 
   long newStart = millis();
 
@@ -2284,7 +2329,7 @@ void goStraight_Backwards_R(long startTime) {
   double distR, distL;
 
   double kpBack, kdBack, kiBack;
-  //kp = 1, kd = 0
+  //kp = 1.5, kd = 0
   kpBack = 1.5; kiBack = 0; kdBack = 0;
 
   distR = UltrasonicRight();
@@ -2363,7 +2408,7 @@ void goStraight_Backwards_L(long startTime) {
 
   double kpBack, kdBack, kiBack;
   //kp = 1, kd = 0
-  kpBack = 2.0; kiBack = 0; kdBack = 2;
+  kpBack = 3.0; kiBack = 0; kdBack = 3.5;
 
   distR = UltrasonicRight();
   distL = UltrasonicLeft();
