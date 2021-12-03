@@ -1324,6 +1324,50 @@ endrecovery:
 
 
   dL = UltrasonicLeft();
+  //dR = UltrasonicRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  while (dL < 15.0) { //this is a redundancy. maybe we can remove?
+    goStraight_BackwardsDownShort(millis());
+
+    dL = UltrasonicLeft();
+    //dR = UltrasonicRight();
+
+    if (dR > 25.00) {
+      //dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+
+  allMotorStop();
+  delay(500);
+
+
+
+
+  Reset_Gyro();
+  turnRightBackwards90();
+  allMotorStop();
+  delay(500);
+  burstBkwd();
+  delay(1000);
+  allMotorStop();
+  delay(1000);
+
+
+
+
+
+
+  dL = UltrasonicLeft();
   dR = UltrasonicRight();
 
   if (dR > 25.00) {
@@ -1333,11 +1377,33 @@ endrecovery:
     dL = UltrasonicLeft();
   }
 
-  while (dL < 20.0 && dR < 20.0) { //this is a redundancy. maybe we can remove?
-    goStraight_BackwardsDownShort(millis());
+  if (dL > 50) {
+    dL = 0;
+  }
+  if (dR > 50) {
+    dR = 0;
+  }
+
+  startTime = millis();
+  timerOffset = 10000;
+  while (1) { //this is a redundancy. maybe we can remove?
 
     dL = UltrasonicLeft();
     dR = UltrasonicRight();
+
+    if (dL > 20.00 || dR > 20.00) {
+      allMotorStop();
+      break;
+    }
+
+    goStraight_Backwards(millis());
+
+    if (dL > 50) {
+      dL = 0;
+    }
+    if (dR = 50) {
+      dR = 0;
+    }
 
     if (dR > 25.00) {
       dR = UltrasonicRight();
@@ -1347,8 +1413,95 @@ endrecovery:
     }
   }
 
+
+  burstFwd();
+  delay(200);
+  allMotorStop();
+
+  Reset_Gyro();
+  delay(500);
+  turnRightBackwards90();
   allMotorStop();
   delay(500);
+  burstBkwd();
+  delay(1000);
+  allMotorStop();
+
+
+  burstFwd();
+  delay(200);
+  allMotorStop();
+
+  Reset_Gyro();
+  delay(500);
+  turnRightBackwards90();
+  allMotorStop();
+  delay(500);
+  burstBkwd();
+  delay(1000);
+  allMotorStop();
+
+
+
+
+  dL = UltrasonicLeft();
+  dR = UltrasonicRight();
+
+  if (dR > 25.00) {
+    dR = UltrasonicRight();
+  }
+  if (dL > 25.00) {
+    dL = UltrasonicLeft();
+  }
+
+  if (dL > 50) {
+    dL = 0;
+  }
+  if (dR > 50) {
+    dR = 0;
+  }
+
+  startTime = millis();
+  timerOffset = 10000;
+  while (1) { //this is a redundancy. maybe we can remove?
+
+    dL = UltrasonicLeft();
+    dR = UltrasonicRight();
+
+    if (dL > 20.00 || dR > 20.00) {
+      allMotorStop();
+      break;
+    }
+
+    goStraight_Backwards(millis());
+
+    if (dL > 50) {
+      dL = 0;
+    }
+    if (dR = 50) {
+      dR = 0;
+    }
+
+    if (dR > 25.00) {
+      dR = UltrasonicRight();
+    }
+    if (dL > 25.00) {
+      dL = UltrasonicLeft();
+    }
+  }
+
+  burstFwd();
+  delay(200);
+  allMotorStop();
+
+  Reset_Gyro();
+  delay(500);
+  turnLeftBackwards90();
+  allMotorStop();
+  delay(500);
+  burstBkwd();
+  delay(1000);
+  allMotorStop();
 
 
 
